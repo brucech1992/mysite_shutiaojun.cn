@@ -11,6 +11,9 @@
 	--gray: 107, 114, 128;
 	--gray-light: 229, 231, 235;
 	--gray-dark: 31, 41, 55;
+	--font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+	--font-heading: "Noto Serif SC", "Songti SC", serif;
+	--font-display: "ZCOOL XiaoWei", "Noto Serif SC", serif;
 	--box-shadow:
 		0 2px 6px rgba(17, 17, 17, 0.06), 0 8px 24px rgba(17, 17, 17, 0.08), 0 16px 32px
 		rgba(17, 17, 17, 0.08);
@@ -30,7 +33,7 @@
 	font-display: swap;
 }
 body {
-	font-family: "Atkinson", sans-serif;
+	font-family: var(--font-body);
 	margin: 0;
 	padding: 0;
 	text-align: left;
@@ -57,6 +60,8 @@ h6 {
 	margin: 0 0 0.5rem 0;
 	color: rgb(var(--black));
 	line-height: 1.2;
+	font-family: var(--font-heading);
+	font-weight: 600;
 }
 h1 {
 	font-size: 3.052em;

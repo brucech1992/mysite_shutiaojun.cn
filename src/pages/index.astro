@@ -157,6 +157,7 @@ const posts = [
 		color: #677580;
 		font-size: 17px;
 		line-height: 1.8;
+		font-family: var(--font-body);
 	}
 	:global(main) {
 		width: auto;
@@ -189,21 +190,24 @@ const posts = [
 		text-transform: uppercase;
 		letter-spacing: 0.16em;
 		font-size: 0.72rem;
+		font-weight: 500;
 		text-shadow: 0 1px 2px rgba(103, 117, 128, 0.4);
 	}
 	h1 {
 		margin: 0.35rem 0 0.22rem;
 		font-size: clamp(2.5rem, 6vw, 3.5rem);
-		font-weight: 500;
-		letter-spacing: 0.08em;
+		font-family: var(--font-display);
+		font-weight: 400;
+		letter-spacing: 0.05em;
 		line-height: 1.15;
 		color: var(--cloud-white);
-		text-shadow: 0 2px 5px rgba(103, 117, 128, 0.55);
+		text-shadow: 0 2px 5px rgba(103, 117, 128, 0.44);
 	}
 	.brand-desc {
 		margin: 0;
 		color: var(--cloud-white);
 		font-size: 0.95rem;
+		letter-spacing: 0.02em;
 		text-shadow: 0 1px 3px rgba(103, 117, 128, 0.45);
 	}
 	.topic-nav {
@@ -219,7 +223,9 @@ const posts = [
 	.topic-nav a {
 		font-size: 0.92rem;
 		color: var(--gull-gray);
+		font-family: var(--font-heading);
 		text-decoration: none;
+		letter-spacing: 0.03em;
 		transition: color 0.2s ease;
 	}
 	.topic-nav a:hover {
@@ -234,14 +240,17 @@ const posts = [
 	h2 {
 		margin: 0.6rem 0 0.5rem;
 		font-size: clamp(1.28rem, 2.5vw, 1.72rem);
+		font-family: var(--font-heading);
 		line-height: 1.4;
-		letter-spacing: 0.01em;
-		font-weight: 500;
+		letter-spacing: 0.02em;
+		font-weight: 600;
 	}
 	h3 {
 		margin: 0 0 0.6rem;
 		font-size: 1.06rem;
+		font-family: var(--font-heading);
 		font-weight: 600;
+		letter-spacing: 0.03em;
 	}
 	p {
 		margin: 0;
@@ -299,6 +308,8 @@ const posts = [
 	.post-meta {
 		color: var(--gull-gray);
 		font-size: 0.78rem;
+		font-family: var(--font-body);
+		font-weight: 500;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 	}
@@ -319,6 +330,8 @@ const posts = [
 		display: inline-block;
 		color: var(--sea-blue);
 		font-size: 0.86rem;
+		font-family: var(--font-heading);
+		letter-spacing: 0.03em;
 		border-bottom: 1px solid var(--sea-blue);
 		padding-bottom: 0.05rem;
 	}
@@ -343,6 +356,7 @@ const posts = [
 		color: var(--gull-gray);
 		text-decoration: none;
 		font-size: 0.92rem;
+		font-family: var(--font-body);
 	}
 	.widget a:hover {
 		color: var(--sea-blue);
