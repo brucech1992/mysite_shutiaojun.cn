@@ -3,25 +3,47 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const featuredProjects = [
+	{ title: '项目名 A', desc: '这个项目要解决什么问题。', tag: '内容策略 / 网站搭建 / AI工作流', href: '/projects' },
+	{ title: '项目名 B', desc: '从想法到落地的关键路径。', tag: '产品思考 / 执行流程', href: '/projects' },
+	{ title: '项目名 C', desc: '一次真实的试错与迭代。', tag: '增长实验 / 内容运营', href: '/projects' },
+];
 ---
 
 <!doctype html>
 <html lang="zh-CN">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
+	<head><BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} /></head>
 	<body>
 		<Header />
-		<main>
-			<h1>朋友你好，来根薯条~</h1>
-			<p>我关心的主题：AI、产品、个人成长、长期主义。</p>
-			<ul>
-				<li><a href="/about">先了解我</a></li>
-				<li><a href="/blog">看长文思考</a></li>
-				<li><a href="/notes">看短笔记</a></li>
-				<li><a href="/projects">看做过的项目</a></li>
-			</ul>
+		<main class="home">
+			<section class="hero"><h1>朋友你好，来根薯条~</h1><p>这里是薯条君的个人站。</p><p>我会把自己做项目、写内容、踩坑复盘的过程，尽量讲清楚、讲实在。如果你也在做自己的事情，希望这里能给你一点灵感，也给你一点“先开始再说”的勇气。</p><div class="hero-actions"><a class="btn btn-primary" href="/projects">先看最近在做什么</a><a class="btn btn-secondary" href="/blog">读三篇入门文章</a></div></section>
+			<section class="section"><h2>最近在忙什么</h2><p>我把当前正在推进的项目、阶段目标和最新进展放在这里。你可以快速了解我在做什么，也能看到真实的过程，而不只是结果。</p><a class="btn btn-secondary" href="/projects">查看全部项目</a></section>
+			<section class="section"><h2>做过的项目，挑几个给你看</h2><p>每个项目我都会尽量写清楚：做这件事的背景、怎么推进、遇到什么坑、最后学到了什么。</p><div class="cards">{featuredProjects.map((item) => (<article class="card"><h3>{item.title}</h3><p>{item.desc}</p><p class="tag">{item.tag}</p><a href={item.href}>看项目复盘</a></article>))}</div><a class="btn btn-secondary" href="/projects">进入项目页</a></section>
+			<section class="section"><h2>写给同路人的一些笔记</h2><p>我会持续更新一些可直接拿来用的内容：包括方法、模板、清单，以及“我自己是怎么做的”。</p><p>不是标准答案，但希望能让你少走一点弯路。</p><a class="btn btn-secondary" href="/blog">去读文章</a></section>
+			<section class="section"><h2>我是谁，为什么做这个站</h2><p>简单说，我是一个相信长期主义的人。喜欢把复杂问题拆开，边做边学，再把经验整理出来分享。</p><p>如果你也在搭建自己的项目，也许我们会聊得来。</p><a class="btn btn-secondary" href="/about">了解更多关于我</a></section>
+			<section class="section" id="contact"><h2>有想法，欢迎来聊</h2><p>无论是项目合作、内容交流，还是你卡在某个问题上，都可以来信打个招呼。</p><p>我会在看到后尽快回复。</p><a class="btn btn-primary" href="mailto:hello@shutiaojun.cn">发送一条消息</a></section>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	.home { width: min(1200px, calc(100% - 4rem)); padding-top: 2rem; padding-bottom: 4rem; }
+	.hero,.section { padding: 2rem; border: 1px solid #e2e8f0; border-radius: 16px; background: #fff; }
+	.hero { margin-bottom: 1rem; box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08); }
+	.section + .section { margin-top: 1rem; }
+	h1 { font-size: clamp(2rem, 6vw, 3rem); max-width: 14ch; }
+	h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); }
+	.hero-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; }
+	.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0; }
+	.card { border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); }
+	.card h3 { font-size: 1.25rem; }
+	.card .tag { font-size: 0.95rem; color: #64748b; }
+	.btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px; border-radius: 12px; font-size: 16px; font-weight: 600; text-decoration: none; border: 1px solid transparent; }
+	.btn-primary { background: #2f6bff; color: #fff; }
+	.btn-primary:hover { background: #2457d6; }
+	.btn-secondary { background: #fff; border-color: #e2e8f0; color: #0f172a; }
+	@media (max-width: 1024px) { .cards { grid-template-columns: 1fr; } }
+	@media (max-width: 768px) { .home { width: min(1200px, calc(100% - 2rem)); } .hero,.section { padding: 1.25rem; } }
+</style>
