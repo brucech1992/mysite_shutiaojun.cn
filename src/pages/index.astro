@@ -1,5 +1,5 @@
 ---
-import { Image, getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import AboutImage from '../assets/blog-placeholder-about.jpg';
@@ -11,12 +11,6 @@ import CoverFive from '../assets/blog-placeholder-5.jpg';
 import HeroSeaside from '../assets/hero-seaside.png';
 import { SITE_DESCRIPTION } from '../consts';
 const HOME_TITLE = '朋友你好，来根薯条～';
-const heroBg = await getImage({
-	src: HeroSeaside,
-	width: 1440,
-	format: 'webp',
-	quality: 72,
-});
 
 const categories = [
 	{
@@ -86,7 +80,7 @@ const posts = [
 	<head><BaseHead title={HOME_TITLE} description={SITE_DESCRIPTION} /></head>
 	<body>
 		<main class="home-shell">
-			<header class="page-branding" style={`--hero-bg: url(${heroBg.src})`}>
+			<header class="page-branding" style={`--hero-bg: url(${HeroSeaside.src})`}>
 				<p class="brand-kicker">Shutiaojun Journal</p>
 				<h1>整点儿薯条吧</h1>
 				<p class="brand-desc">记录设计思考、项目复盘与生活灵感。</p>
