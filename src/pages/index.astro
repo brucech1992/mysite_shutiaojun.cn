@@ -88,7 +88,7 @@ const posts = [
 		<main class="home-shell">
 			<header class="page-branding" style={`--hero-bg: url(${heroBg.src})`}>
 				<p class="brand-kicker">Shutiaojun Journal</p>
-				<h1>整点儿薯条吧！</h1>
+				<h1>整点儿薯条吧</h1>
 				<p class="brand-desc">记录设计思考、项目复盘与生活灵感。</p>
 				<nav class="topic-nav" aria-label="主页分类导航">
 					{categories.map((item) => (
@@ -391,6 +391,9 @@ const posts = [
 	@media (max-width: 720px) {
 		.home-shell {
 			width: calc(100% - 1.2rem);
+		}
+		.page-branding {
+			background-position: left center;
 		}
 		.post-link-compact {
 			grid-template-columns: 96px minmax(0, 1fr);
