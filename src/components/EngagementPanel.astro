@@ -1,0 +1,287 @@
+---
+interface Props {
+	postId: string;
+}
+
+const { postId } = Astro.props;
+---
+
+<section class="engagement" data-post-id={postId}>
+	<h3>点赞与评论</h3>
+	<p class="hint">发表评论前请登记用户名与联系邮箱。</p>
+	<p class="hint muted">当前版本会把互动数据保存在你的浏览器里。</p>
+
+	<form class="profile-form">
+		<label>
+			用户名
+			<input class="profile-name" type="text" placeholder="请输入用户名" required />
+		</label>
+		<label>
+			联系邮箱
+			<input class="profile-email" type="email" placeholder="请输入邮箱" required />
+		</label>
+		<button type="submit">登记/更新资料</button>
+		<p class="profile-status" aria-live="polite"></p>
+	</form>
+
+	<div class="like-row">
+		<button type="button" class="like-btn">点赞</button>
+		<span class="like-count">0 个赞</span>
+	</div>
+
+	<form class="comment-form">
+		<label>
+			评论内容
+			<textarea class="comment-input" rows="4" placeholder="写下你的想法..." required></textarea>
+		</label>
+		<button type="submit">发布评论</button>
+		<p class="comment-status" aria-live="polite"></p>
+	</form>
+
+	<div class="comment-list"></div>
+</section>
+
+<style>
+	.engagement {
+		margin-top: 2.5rem;
+		border: 1px solid #d8e6ef;
+		border-radius: 12px;
+		background: #f6fbff;
+		padding: 1rem;
+	}
+	.engagement h3 {
+		margin: 0 0 0.4rem;
+		font-size: 1.2rem;
+	}
+	.hint {
+		margin: 0.2rem 0;
+		font-size: 0.9rem;
+		color: #5e6a73;
+	}
+	.muted {
+		font-size: 0.82rem;
+		color: #7e8a93;
+	}
+	.profile-form,
+	.comment-form {
+		display: grid;
+		gap: 0.5rem;
+		margin-top: 0.8rem;
+	}
+	label {
+		display: grid;
+		gap: 0.2rem;
+		font-size: 0.9rem;
+		color: #334455;
+	}
+	input,
+	textarea {
+		border: 1px solid #bdd3e0;
+		border-radius: 8px;
+		padding: 0.55rem 0.65rem;
+		font: inherit;
+		background: #fff;
+		color: #24323e;
+	}
+	button {
+		width: fit-content;
+		border: 1px solid #7aa3be;
+		border-radius: 999px;
+		padding: 0.42rem 0.9rem;
+		background: #eaf5fc;
+		color: #2b4558;
+		font-size: 0.9rem;
+		cursor: pointer;
+	}
+	button:hover {
+		background: #deeff9;
+	}
+	.profile-status,
+	.comment-status {
+		margin: 0;
+		min-height: 1.2rem;
+		font-size: 0.85rem;
+		color: #50616f;
+	}
+	.like-row {
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		margin-top: 0.9rem;
+	}
+	.like-count {
+		font-size: 0.9rem;
+		color: #50616f;
+	}
+	.comment-list {
+		display: grid;
+		gap: 0.65rem;
+		margin-top: 1rem;
+	}
+	.comment-item {
+		border: 1px solid #d7e3eb;
+		border-radius: 10px;
+		background: #fff;
+		padding: 0.7rem;
+	}
+	.comment-meta {
+		font-size: 0.82rem;
+		color: #6a7782;
+		margin-bottom: 0.35rem;
+	}
+	.comment-body {
+		margin: 0;
+		font-size: 0.92rem;
+		color: #2f3d49;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+</style>
+
+<script is:inline>
+(() => {
+	const STORE_KEY = 'sj_engagement_v1';
+	const PROFILE_KEY = 'sj_profile_v1';
+
+	const parseJson = (value) => {
+		if (!value) return {};
+		try {
+			return JSON.parse(value);
+		} catch {
+			return {};
+		}
+	};
+
+	const loadStore = () => parseJson(localStorage.getItem(STORE_KEY));
+	const saveStore = (store) => localStorage.setItem(STORE_KEY, JSON.stringify(store));
+	const loadProfile = () => parseJson(localStorage.getItem(PROFILE_KEY));
+	const saveProfile = (profile) => localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+
+	document.querySelectorAll('.engagement[data-post-id]').forEach((root) => {
+		const postId = root.getAttribute('data-post-id') || 'default';
+		const profileForm = root.querySelector('.profile-form');
+		const nameInput = root.querySelector('.profile-name');
+		const emailInput = root.querySelector('.profile-email');
+		const profileStatus = root.querySelector('.profile-status');
+		const likeBtn = root.querySelector('.like-btn');
+		const likeCount = root.querySelector('.like-count');
+		const commentForm = root.querySelector('.comment-form');
+		const commentInput = root.querySelector('.comment-input');
+		const commentStatus = root.querySelector('.comment-status');
+		const commentList = root.querySelector('.comment-list');
+
+		const getPostData = () => {
+			const store = loadStore();
+			if (!store[postId]) {
+				store[postId] = { likes: 0, likedBy: [], comments: [] };
+				saveStore(store);
+			}
+			return { store, postData: store[postId] };
+		};
+
+		const render = () => {
+			const profile = loadProfile();
+			const { postData } = getPostData();
+
+			nameInput.value = profile.username || '';
+			emailInput.value = profile.email || '';
+			likeCount.textContent = `${postData.likes} 个赞`;
+			commentList.innerHTML = '';
+
+			if (!postData.comments.length) {
+				const empty = document.createElement('p');
+				empty.className = 'hint';
+				empty.textContent = '还没有评论，来发布第一条吧。';
+				commentList.appendChild(empty);
+				return;
+			}
+
+			postData.comments
+				.slice()
+				.reverse()
+				.forEach((item) => {
+					const card = document.createElement('article');
+					card.className = 'comment-item';
+
+					const meta = document.createElement('p');
+					meta.className = 'comment-meta';
+					meta.textContent = `${item.username} · ${item.email} · ${new Date(item.createdAt).toLocaleString()}`;
+
+					const body = document.createElement('p');
+					body.className = 'comment-body';
+					body.textContent = item.content;
+
+					card.append(meta, body);
+					commentList.appendChild(card);
+				});
+		};
+
+		profileForm.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const username = nameInput.value.trim();
+			const email = emailInput.value.trim();
+
+			if (!username || !email) {
+				profileStatus.textContent = '请完整填写用户名和邮箱。';
+				return;
+			}
+
+			saveProfile({ username, email });
+			profileStatus.textContent = '资料已保存，可以点赞和评论了。';
+			render();
+		});
+
+		likeBtn.addEventListener('click', () => {
+			const profile = loadProfile();
+			if (!profile.username || !profile.email) {
+				profileStatus.textContent = '请先登记用户名和邮箱后再点赞。';
+				return;
+			}
+
+			const { store, postData } = getPostData();
+			if (postData.likedBy.includes(profile.email)) {
+				commentStatus.textContent = '你已经点过赞了。';
+				return;
+			}
+
+			postData.likes += 1;
+			postData.likedBy.push(profile.email);
+			store[postId] = postData;
+			saveStore(store);
+			commentStatus.textContent = '点赞成功。';
+			render();
+		});
+
+		commentForm.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const profile = loadProfile();
+			const content = commentInput.value.trim();
+
+			if (!profile.username || !profile.email) {
+				commentStatus.textContent = '请先登记用户名和邮箱后再评论。';
+				return;
+			}
+
+			if (!content) {
+				commentStatus.textContent = '评论内容不能为空。';
+				return;
+			}
+
+			const { store, postData } = getPostData();
+			postData.comments.push({
+				username: profile.username,
+				email: profile.email,
+				content,
+				createdAt: Date.now(),
+			});
+			store[postId] = postData;
+			saveStore(store);
+			commentInput.value = '';
+			commentStatus.textContent = '评论已发布。';
+			render();
+		});
+
+		render();
+	});
+})();
+</script>
