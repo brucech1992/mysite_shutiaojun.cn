@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import AboutImage from '../assets/blog-placeholder-about.jpg';
@@ -11,6 +11,12 @@ import CoverFive from '../assets/blog-placeholder-5.jpg';
 import HeroSeaside from '../assets/hero-seaside.png';
 import { SITE_DESCRIPTION } from '../consts';
 const HOME_TITLE = '朋友你好，来根薯条～';
+const heroBg = await getImage({
+	src: HeroSeaside,
+	width: 1440,
+	format: 'webp',
+	quality: 72,
+});
 
 const categories = [
 	{
@@ -80,7 +86,7 @@ const posts = [
 	<head><BaseHead title={HOME_TITLE} description={SITE_DESCRIPTION} /></head>
 	<body>
 		<main class="home-shell">
-			<header class="page-branding" style={`--hero-bg: url(${HeroSeaside.src})`}>
+			<header class="page-branding" style={`--hero-bg: url(${heroBg.src})`}>
 				<p class="brand-kicker">Shutiaojun Journal</p>
 				<h1>整点儿薯条吧！</h1>
 				<p class="brand-desc">记录设计思考、项目复盘与生活灵感。</p>
@@ -94,12 +100,20 @@ const posts = [
 			<section class="content-layout">
 				<div class="post-stream">
 					{posts.map((post, index) => (
-						<article class="post-card" style={`animation-delay:${index * 80}ms`}>
-							<a class="post-link" href={post.href}>
-								<div class="post-thumb">
-									<Image src={post.image} width={880} height={478} alt={post.title} />
+						<article
+							class:list={['post-card', index > 0 && 'post-card-compact']}
+							style={`animation-delay:${index * 80}ms`}
+						>
+							<a class:list={['post-link', index > 0 && 'post-link-compact']} href={post.href}>
+								<div class:list={['post-thumb', index > 0 && 'post-thumb-compact']}>
+									<Image
+										src={post.image}
+										width={index === 0 ? 880 : 320}
+										height={index === 0 ? 478 : 320}
+										alt={post.title}
+									/>
 								</div>
-								<div class="post-copy">
+								<div class:list={['post-copy', index > 0 && 'post-copy-compact']}>
 									<p class="post-meta">{post.category} · {post.date}</p>
 									<h2>{post.title}</h2>
 									<p>{post.summary}</p>
@@ -252,9 +266,19 @@ const posts = [
 		transform: translateY(10px);
 		animation: fade-up 0.55s ease forwards;
 	}
+	.post-card-compact {
+		padding-bottom: 1.2rem;
+		margin-bottom: 1.2rem;
+	}
 	.post-link {
 		display: block;
 		text-decoration: none;
+	}
+	.post-link-compact {
+		display: grid;
+		grid-template-columns: 146px minmax(0, 1fr);
+		gap: 0.9rem;
+		align-items: start;
 	}
 	.post-thumb {
 		overflow: hidden;
@@ -263,11 +287,19 @@ const posts = [
 		margin-bottom: 1rem;
 		border: 1px solid rgba(139, 180, 200, 0.45);
 	}
+	.post-thumb-compact {
+		margin-bottom: 0;
+		aspect-ratio: 1 / 1;
+	}
 	.post-thumb img {
 		display: block;
 		width: 100%;
 		height: auto;
 		transition: transform 0.4s ease;
+	}
+	.post-thumb-compact img {
+		height: 100%;
+		object-fit: cover;
 	}
 	.post-link:hover .post-thumb img {
 		transform: scale(1.02);
@@ -281,6 +313,15 @@ const posts = [
 	.post-copy p {
 		margin-bottom: 0.8rem;
 		color: var(--gull-gray);
+	}
+	.post-copy-compact h2 {
+		margin-top: 0.1rem;
+		font-size: clamp(1.04rem, 2vw, 1.22rem);
+		line-height: 1.45;
+	}
+	.post-copy-compact p {
+		margin-bottom: 0.5rem;
+		font-size: 0.92rem;
 	}
 	.read-more {
 		display: inline-block;
@@ -352,6 +393,10 @@ const posts = [
 	@media (max-width: 720px) {
 		.home-shell {
 			width: calc(100% - 1.2rem);
+		}
+		.post-link-compact {
+			grid-template-columns: 96px minmax(0, 1fr);
+			gap: 0.7rem;
 		}
 		.topic-nav {
 			gap: 0.85rem 1.1rem;
