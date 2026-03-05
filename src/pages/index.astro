@@ -4,10 +4,33 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-const featuredProjects = [
-	{ title: '内容系统升级', desc: '把零散想法整理成可持续发布的内容系统。', tag: 'Content / Workflow', href: '/projects' },
-	{ title: '网站重构冲刺', desc: '在高压时间窗内完成上线、修复与稳定。', tag: 'Frontend / Delivery', href: '/projects' },
-	{ title: 'AI 协同实验', desc: '多 agent 协作下的任务拆解与质量控制。', tag: 'AI Ops / PM', href: '/projects' },
+const featured = [
+	{
+		title: '内容系统升级',
+		summary: '把零散想法整理成可持续发布的内容系统，并建立从选题到发布的完整流程。',
+		href: '/projects',
+	},
+	{
+		title: '网站重构冲刺',
+		summary: '在高压时间窗内完成上线、修复与稳定，确保访问链路和内容结构都可维护。',
+		href: '/projects',
+	},
+	{
+		title: 'AI 协同实验',
+		summary: '用多 agent 协作拆解任务，验证“管理+执行+巡检”的交付效率。',
+		href: '/projects',
+	},
+];
+
+const allWork = [
+	'内容系统升级',
+	'网站重构冲刺',
+	'AI 协同实验',
+	'品牌叙事框架',
+	'项目复盘模板',
+	'个人知识库整理',
+	'发布流程自动化',
+	'设计规范沉淀',
 ];
 ---
 
@@ -17,55 +40,73 @@ const featuredProjects = [
 	<body>
 		<Header />
 		<main class="home">
-			<section class="hero">
-				<div class="hero-left">
-					<p class="kicker">个人站 · 持续更新</p>
+			<section class="hero panel">
+				<div class="hero-main">
 					<h1>朋友你好，来根薯条~</h1>
-					<p class="lead">我把做项目、写内容、踩坑复盘的过程，完整放在这里。希望你能少走弯路，也更快开始。</p>
-					<div class="hero-actions">
-						<a class="btn btn-primary" href="/projects">先看项目</a>
-						<a class="btn btn-secondary" href="/blog">读最新文章</a>
+					<p class="hero-lead">我会持续分享项目、思考和实践过程。尽量讲清楚，也尽量讲实在。</p>
+					<div class="hero-meta">
+						<span>个人创作者</span>
+						<span>内容实践者</span>
 					</div>
 				</div>
-				<aside class="hero-right">
-					<p class="kicker">从这里开始</p>
+				<aside class="hero-nav panel-soft">
+					<p class="kicker">Where you can start</p>
 					<ul>
-						<li><a href="/about">了解我在做什么</a></li>
-						<li><a href="/projects">看一个真实项目复盘</a></li>
-						<li><a href="/blog">读一篇方法论文章</a></li>
+						<li><a href="/about">了解我的经历与方向</a></li>
+						<li><a href="/projects">读一个项目案例</a></li>
+						<li><a href="/blog">看最近一篇文章</a></li>
 						<li><a href="/#contact">直接联系我</a></li>
 					</ul>
 				</aside>
 			</section>
 
-			<section class="section">
-				<div class="section-head"><p class="kicker">Featured Work</p><h2>近期代表项目</h2></div>
-				<div class="cards">
-					{featuredProjects.map((item) => (
-						<article class="card">
-							<p class="meta">From the case study</p>
-							<h3>{item.title}</h3>
-							<p>{item.desc}</p>
-							<p class="tag">{item.tag}</p>
-							<a href={item.href}>Read Case Study →</a>
+			<section class="featured panel">
+				<div class="section-head">
+					<p class="kicker">Featured Work</p>
+					<h2>精选项目</h2>
+				</div>
+				<div class="featured-list">
+					{featured.map((item) => (
+						<article class="feature-item">
+							<div class="feature-copy">
+								<p class="meta">From the case study</p>
+								<h3>{item.title}</h3>
+								<p>{item.summary}</p>
+								<a href={item.href}>Read Case Study →</a>
+							</div>
+							<div class="feature-visual" aria-hidden="true"></div>
 						</article>
 					))}
 				</div>
 			</section>
 
-			<section class="section split" id="contact">
-				<div>
-					<p class="kicker">Blog</p>
-					<h2>写给同路人的笔记</h2>
-					<p>聚焦实操：模板、清单、流程、复盘。不是鸡汤，尽量都能直接用。</p>
-					<a class="btn btn-secondary" href="/blog">去读文章</a>
+			<section class="allwork panel">
+				<div class="section-head line">
+					<h2>All work</h2>
+					<span>{allWork.length}</span>
 				</div>
-				<div class="contact-box">
-					<p class="kicker">Contact</p>
-					<h3>有想法，欢迎来聊</h3>
-					<p>项目合作、内容交流、卡点求助，都可以直接发我。</p>
-					<a class="btn btn-primary" href="mailto:hello@shutiaojun.cn">发送一条消息</a>
+				<div class="work-grid">
+					{allWork.map((name, i) => (
+						<a href="/projects" class="work-card">
+							<span class="index">{String(i + 1).padStart(2, '0')}</span>
+							<h3>{name}</h3>
+							<p>Creative Direction · Web Design · Delivery</p>
+						</a>
+					))}
 				</div>
+			</section>
+
+			<section class="blog panel" id="contact">
+				<div class="section-head">
+					<h2>Blog</h2>
+					<a href="/blog">查看全部</a>
+				</div>
+				<article class="blog-card">
+					<h3>我是怎么把一个站点从 404 拉回可用状态的</h3>
+					<p class="date">Mar 5, 2026</p>
+					<p>从发布链路排查、工作流收敛到线上验证，这篇会把全过程写清楚，给你一份可复用的排障手册。</p>
+					<a href="/blog">Keep Reading →</a>
+				</article>
 			</section>
 		</main>
 		<Footer />
@@ -73,36 +114,47 @@ const featuredProjects = [
 </html>
 
 <style>
-	.home { width: min(1240px, calc(100% - 3rem)); margin: 0 auto; padding: 2rem 0 4rem; }
-	.kicker { margin: 0 0 .6rem; font-size: .82rem; text-transform: uppercase; letter-spacing: .08em; color: #667085; }
-	.hero,.section { border: 1px solid #e6e8ee; border-radius: 20px; background: #fff; }
-	.hero { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; padding: 2rem; margin-bottom: 1rem; }
-	h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.08; max-width: 13ch; margin: 0 0 1rem; }
-	.lead { font-size: 1.07rem; color: #475467; max-width: 58ch; }
-	.hero-right { background: #f8f9fc; border: 1px solid #eceff5; border-radius: 16px; padding: 1rem 1.1rem; }
-	.hero-right ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .55rem; }
-	.hero-right a { color: #1f2937; text-decoration: none; border-bottom: 1px dashed #d0d5dd; padding-bottom: .25rem; }
-	.hero-actions { display: flex; gap: .75rem; margin-top: 1.1rem; flex-wrap: wrap; }
-	.section { padding: 1.6rem; margin-top: 1rem; }
-	.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: .8rem; }
-	h2 { margin: 0; font-size: clamp(1.4rem, 3vw, 2rem); }
-	.cards { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .9rem; }
-	.card { border: 1px solid #e8ebf2; border-radius: 16px; padding: 1rem; background: #fcfcfd; }
-	.card .meta { color: #667085; font-size: .82rem; margin-bottom: .5rem; }
-	.card h3 { margin: 0 0 .5rem; font-size: 1.18rem; }
-	.card p { margin: 0 0 .6rem; color: #475467; }
-	.card .tag { font-size: .9rem; color: #667085; }
-	.card a { color: #111827; text-decoration: none; font-weight: 600; }
-	.split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: stretch; }
-	.contact-box { border: 1px solid #eceff5; border-radius: 14px; padding: 1rem; background: #f8f9fc; }
-	.btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 18px; border-radius: 999px; font-size: .95rem; font-weight: 600; text-decoration: none; border: 1px solid transparent; }
-	.btn-primary { background: #111827; color: #fff; }
-	.btn-secondary { background: #fff; border-color: #d0d5dd; color: #111827; }
-	@media (max-width: 980px) {
-		.hero,.split,.cards { grid-template-columns: 1fr; }
+	:global(body) {
+		background: #f3f4f6;
+		color: #111827;
+		font-size: 18px;
+	}
+	.home { width: min(1320px, calc(100% - 2rem)); margin: 0 auto; padding: 1.2rem 0 3.5rem; }
+	.panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 1.4rem; }
+	.panel + .panel { margin-top: .9rem; }
+	.panel-soft { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 14px; padding: 1rem; }
+	.kicker { margin: 0 0 .45rem; color: #6b7280; text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; }
+	h1 { margin: 0 0 .8rem; font-size: clamp(2.4rem, 5.8vw, 4.4rem); line-height: .98; max-width: 10ch; }
+	h2 { margin: 0; font-size: clamp(1.5rem, 3vw, 2.2rem); }
+	h3 { margin: 0 0 .55rem; font-size: clamp(1.15rem, 2vw, 1.55rem); }
+	p { margin: 0 0 .75rem; color: #4b5563; }
+	a { color: #111827; text-decoration: none; }
+	a:hover { text-decoration: underline; }
+	.hero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 1rem; align-items: stretch; }
+	.hero-lead { max-width: 60ch; }
+	.hero-meta { display: flex; gap: .7rem; flex-wrap: wrap; }
+	.hero-meta span { border: 1px solid #d1d5db; border-radius: 999px; padding: .35rem .7rem; font-size: .85rem; color: #6b7280; }
+	.hero-nav ul { margin: 0; padding-left: 1rem; display: grid; gap: .45rem; }
+	.section-head { display: flex; justify-content: space-between; align-items: center; gap: .8rem; margin-bottom: .9rem; }
+	.section-head.line { padding-bottom: .65rem; border-bottom: 1px solid #e5e7eb; }
+	.featured-list { display: grid; gap: .7rem; }
+	.feature-item { display: grid; grid-template-columns: 1fr .9fr; gap: .9rem; border: 1px solid #e5e7eb; border-radius: 14px; padding: .95rem; background: #fafafa; }
+	.meta { font-size: .78rem; color: #6b7280; text-transform: uppercase; letter-spacing: .06em; }
+	.feature-visual { border-radius: 12px; min-height: 160px; background: linear-gradient(135deg, #e5e7eb 0%, #f9fafb 50%, #dbeafe 100%); border: 1px solid #e5e7eb; }
+	.work-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .7rem; }
+	.work-card { display: block; border: 1px solid #e5e7eb; border-radius: 12px; padding: .85rem; background: #fcfcfd; }
+	.work-card .index { font-size: .75rem; color: #6b7280; display: inline-block; margin-bottom: .35rem; }
+	.work-card p { margin: 0; font-size: .86rem; color: #6b7280; }
+	.blog-card { border: 1px solid #e5e7eb; border-radius: 14px; padding: 1rem; background: #fafafa; }
+	.blog-card .date { font-size: .85rem; color: #6b7280; }
+	@media (max-width: 1080px) {
+		.hero, .feature-item { grid-template-columns: 1fr; }
+		.work-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
 	}
 	@media (max-width: 640px) {
-		.home { width: calc(100% - 1.2rem); }
-		.hero,.section { padding: 1rem; border-radius: 14px; }
+		.home { width: calc(100% - .8rem); }
+		.panel { padding: .9rem; border-radius: 12px; }
+		h1 { font-size: clamp(2rem, 10vw, 3rem); }
+		.work-grid { grid-template-columns: 1fr; }
 	}
 </style>
