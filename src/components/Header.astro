@@ -24,6 +24,21 @@ import HeaderLink from './HeaderLink.astro';
 	.internal-links { display: flex; flex-wrap: wrap; }
 	nav a { padding: 1em 0.5em; color: var(--black); border-bottom: 4px solid transparent; text-decoration: none; }
 	nav a.active { text-decoration: none; border-bottom-color: var(--accent); }
-	.talk-btn { padding: 0.6em 1em; border-radius: 12px; border: none; color: #fff; background: var(--accent); font-weight: 700; }
+	.talk-btn {
+		padding: 0.52em 0.92em;
+		border-radius: 999px;
+		border: 1px solid #d7c98d;
+		color: #4d4530;
+		background: #f3e7b4;
+		font-weight: 600;
+		line-height: 1.1;
+		transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+	}
+	.talk-btn:hover {
+		text-decoration: none;
+		background: #efe0a7;
+		border-color: #c8b777;
+		transform: translateY(-1px);
+	}
 	@media (max-width: 900px) { nav { flex-wrap: wrap; padding: 0.5rem 0; } .talk-btn { margin-left: auto; } }
 </style>
