@@ -1,0 +1,30 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <BaseHead title={`关于 - ${SITE_TITLE}`} description="关于我与这个网站" />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>关于我</h1>
+      <p>你好，我是薯条君。这个网站来自一个有点荒诞又很真诚的念头：生命的意义，在于整点薯条。</p>
+      <p>我把这里当作长期写作与复盘的空间，记录项目、决策、踩坑和成长。</p>
+      <h2>我会写什么</h2>
+      <ul>
+        <li>做事方法：如何把复杂问题拆开并推进</li>
+        <li>项目复盘：做了什么，为什么，结果如何</li>
+        <li>个人思考：关于时间、选择、长期主义</li>
+      </ul>
+      <h2>为什么要做这个站</h2>
+      <p>为了把“经历”变成“经验”，把“经验”变成可复用的方法。</p>
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,25 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <BaseHead title={`笔记 - ${SITE_TITLE}`} description="短笔记与碎片想法" />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>笔记</h1>
+      <p>这里记录短想法、灵感和当天值得记住的一句话。</p>
+      <ul>
+        <li>做复杂系统时，先定义角色边界，再谈效率。</li>
+        <li>每次复盘都应该留下可复用规则，而不是情绪。</li>
+      </ul>
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,27 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>朋友你好，来根薯条~</h1>
+			<p>我关心的主题：AI、产品、个人成长、长期主义。</p>
+			<ul>
+				<li><a href="/about">先了解我</a></li>
+				<li><a href="/blog">看长文思考</a></li>
+				<li><a href="/notes">看短笔记</a></li>
+				<li><a href="/projects">看做过的项目</a></li>
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>

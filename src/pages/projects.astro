@@ -1,0 +1,25 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <BaseHead title={`项目 - ${SITE_TITLE}`} description="项目与复盘" />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>项目</h1>
+      <p>这里会持续更新我做过的项目与复盘。</p>
+      <ul>
+        <li><strong>OpenClaw 多-agent 团队搭建</strong>：角色设计、日志机制、自动巡检与备份。</li>
+        <li><strong>个人网站从0到1</strong>：内容体系、设计风格、部署与运营流程。</li>
+      </ul>
+    </main>
+    <Footer />
+  </body>
+</html>
