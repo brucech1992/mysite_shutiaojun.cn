@@ -1,6 +1,13 @@
 ---
 import HeroSeaside from '../assets/hero-seaside.png';
 import { COLUMNS } from '../lib/columns';
+
+interface Props {
+	hideColumn?: string;
+}
+
+const { hideColumn } = Astro.props;
+const navColumns = COLUMNS.filter((column) => column.slug !== hideColumn);
 ---
 
 <header class="site-hero">
@@ -11,7 +18,7 @@ import { COLUMNS } from '../lib/columns';
 		</div>
 	</a>
 	<nav class="hero-nav" aria-label="栏目导航">
-		{COLUMNS.map((column) => (
+		{navColumns.map((column) => (
 			<a href={`/${column.slug}`}>{column.name}</a>
 		))}
 	</nav>
@@ -20,29 +27,31 @@ import { COLUMNS } from '../lib/columns';
 <style>
 	.site-hero {
 		width: min(var(--site-width), calc(100% - 2rem));
-		margin: 0.6rem auto 0;
+		margin: 0 auto;
 	}
 	.hero-link {
 		display: block;
 		text-decoration: none;
-		padding: 2.4rem 1rem 1.15rem;
+		padding: 3rem 1.1rem 1.2rem;
 		background: var(--hero-bg);
 		background-size: cover;
 		background-position: center;
+		border: 1px solid #d8dee4;
+		border-top: 0;
+		text-align: center;
 	}
 	.hero-copy h1 {
 		margin: 0;
-		font-size: clamp(1.95rem, 4vw, 2.65rem);
+		font-size: clamp(2.25rem, 4.4vw, 3.1rem);
 		font-family: var(--font-display);
 		font-weight: 400;
 		letter-spacing: 0.04em;
 		color: #f7fbff;
 	}
 	.hero-copy p {
-		margin: 0.45rem 0 0;
-		font-size: 0.92rem;
-		line-height: 1.7;
-		color: #edf6fb;
+		margin: 0.5rem 0 0;
+		font-size: 0.95rem;
+		color: #f2f8fc;
 	}
 	.hero-nav {
 		display: flex;
@@ -70,17 +79,10 @@ import { COLUMNS } from '../lib/columns';
 	@media (max-width: 720px) {
 		.site-hero {
 			width: calc(100% - 1.2rem);
-			margin-top: 0.45rem;
 		}
 		.hero-link {
-			padding: 1.85rem 0.8rem 0.95rem;
+			padding: 3rem 1.1rem 1.2rem;
 			background-position: left center;
-		}
-		.hero-copy h1 {
-			font-size: clamp(1.75rem, 9vw, 2.2rem);
-		}
-		.hero-copy p {
-			font-size: 0.84rem;
 		}
 	}
 </style>
