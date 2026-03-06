@@ -19,6 +19,16 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+._*
+**/._*
 
 # jetbrains setting folder
 .idea/
+
+# local workflow artifacts (not part of website project)
+.openclaw/
+agents/
+backups/
+_ops/
+_templates/
+2026/
