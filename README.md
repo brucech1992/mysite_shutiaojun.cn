@@ -1,62 +1,47 @@
-# Astro Starter Kit: Blog
+# 薯条菌网站（Astro）
 
-```sh
-npm create astro@latest -- --template blog
+一个使用 Astro 构建的静态网站，包含三大栏目：
+
+- 原味薯条
+- 蕃茄酱
+- 海鸥看过
+
+网站已接入云端互动（点赞 + 评论）：
+
+- 用户先登记 `用户名 + 联系邮箱`
+- 点赞与评论数据写入 Supabase
+- 评论区邮箱默认脱敏显示
+
+## 本地开发
+
+```bash
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 生产构建
 
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+```bash
+npm run build
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 互动功能配置（Supabase）
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+1. 在 Supabase 新建项目。
+2. 打开 SQL Editor，执行 [`supabase/engagement.sql`](./supabase/engagement.sql)。
+3. 复制 `.env.example` 为 `.env`，填入：
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+```bash
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
+4. 重新构建并部署。
 
-## 🧞 Commands
+如果未配置这两个环境变量，页面会显示“互动云端未配置”，并自动禁用点赞/评论按钮。
 
-All commands are run from the root of the project, from a terminal:
+## 技术栈
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+- Astro 5
+- Content Collections
+- Supabase REST API（无后端服务，纯静态站可用）

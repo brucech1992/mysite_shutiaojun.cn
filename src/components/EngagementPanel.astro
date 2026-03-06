@@ -4,12 +4,19 @@ interface Props {
 }
 
 const { postId } = Astro.props;
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL ?? '';
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
 ---
 
-<section class="engagement" data-post-id={postId}>
+<section
+	class="engagement"
+	data-post-id={postId}
+	data-supabase-url={supabaseUrl}
+	data-supabase-key={supabaseAnonKey}
+>
 	<h3>点赞与评论</h3>
 	<p class="hint">发表评论前请登记用户名与联系邮箱。</p>
-	<p class="hint muted">当前版本会把互动数据保存在你的浏览器里。</p>
+	<p class="hint muted backend-status">正在连接云端互动服务...</p>
 
 	<form class="profile-form">
 		<label>
@@ -96,6 +103,10 @@ const { postId } = Astro.props;
 	button:hover {
 		background: #deeff9;
 	}
+	button:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
 	.profile-status,
 	.comment-status {
 		margin: 0;
@@ -140,7 +151,6 @@ const { postId } = Astro.props;
 
 <script is:inline>
 (() => {
-	const STORE_KEY = 'sj_engagement_v1';
 	const PROFILE_KEY = 'sj_profile_v1';
 
 	const parseJson = (value) => {
@@ -167,13 +177,14 @@ const { postId } = Astro.props;
 		return `${first}***@${maskedDomainHead}.${suffix}`;
 	};
 
-	const loadStore = () => parseJson(localStorage.getItem(STORE_KEY));
-	const saveStore = (store) => localStorage.setItem(STORE_KEY, JSON.stringify(store));
 	const loadProfile = () => parseJson(localStorage.getItem(PROFILE_KEY));
 	const saveProfile = (profile) => localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 
 	document.querySelectorAll('.engagement[data-post-id]').forEach((root) => {
 		const postId = root.getAttribute('data-post-id') || 'default';
+		const supabaseUrl = (root.getAttribute('data-supabase-url') || '').replace(/\/$/, '');
+		const supabaseKey = root.getAttribute('data-supabase-key') || '';
+		const backendStatus = root.querySelector('.backend-status');
 		const profileForm = root.querySelector('.profile-form');
 		const nameInput = root.querySelector('.profile-name');
 		const emailInput = root.querySelector('.profile-email');
@@ -185,25 +196,51 @@ const { postId } = Astro.props;
 		const commentStatus = root.querySelector('.comment-status');
 		const commentList = root.querySelector('.comment-list');
 
-		const getPostData = () => {
-			const store = loadStore();
-			if (!store[postId]) {
-				store[postId] = { likes: 0, likedBy: [], comments: [] };
-				saveStore(store);
+		const isConfigured = Boolean(supabaseUrl && supabaseKey);
+
+		const request = async (path, { method = 'GET', body, prefer } = {}) => {
+			const headers = {
+				apikey: supabaseKey,
+				Authorization: `Bearer ${supabaseKey}`,
+			};
+
+			if (method !== 'GET') {
+				headers['Content-Type'] = 'application/json';
 			}
-			return { store, postData: store[postId] };
+			if (prefer) {
+				headers['Prefer'] = prefer;
+			}
+
+			const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
+				method,
+				headers,
+				body: body ? JSON.stringify(body) : undefined,
+			});
+
+			if (!response.ok) {
+				const detail = await response.text();
+				const error = new Error(detail || `HTTP ${response.status}`);
+				error.status = response.status;
+				throw error;
+			}
+
+			const contentType = response.headers.get('content-type') || '';
+			if (contentType.includes('application/json')) {
+				return response.json();
+			}
+			return [];
 		};
 
-		const render = () => {
+		const renderProfile = () => {
 			const profile = loadProfile();
-			const { postData } = getPostData();
-
 			nameInput.value = profile.username || '';
 			emailInput.value = profile.email || '';
-			likeCount.textContent = `${postData.likes} 个赞`;
+		};
+
+		const renderComments = (comments) => {
 			commentList.innerHTML = '';
 
-			if (!postData.comments.length) {
+			if (!comments.length) {
 				const empty = document.createElement('p');
 				empty.className = 'hint';
 				empty.textContent = '还没有评论，来发布第一条吧。';
@@ -211,27 +248,54 @@ const { postId } = Astro.props;
 				return;
 			}
 
-			postData.comments
-				.slice()
-				.reverse()
-				.forEach((item) => {
-					const card = document.createElement('article');
-					card.className = 'comment-item';
+			comments.forEach((item) => {
+				const card = document.createElement('article');
+				card.className = 'comment-item';
 
-					const meta = document.createElement('p');
-					meta.className = 'comment-meta';
-					meta.textContent = `${item.username} · ${maskEmail(item.email)} · ${new Date(item.createdAt).toLocaleString()}`;
+				const meta = document.createElement('p');
+				meta.className = 'comment-meta';
+				meta.textContent = `${item.username} · ${maskEmail(item.email)} · ${new Date(item.created_at).toLocaleString()}`;
 
-					const body = document.createElement('p');
-					body.className = 'comment-body';
-					body.textContent = item.content;
+				const body = document.createElement('p');
+				body.className = 'comment-body';
+				body.textContent = item.content;
 
-					card.append(meta, body);
-					commentList.appendChild(card);
-				});
+				card.append(meta, body);
+				commentList.appendChild(card);
+			});
 		};
 
-		profileForm.addEventListener('submit', (event) => {
+		const refreshRemoteData = async () => {
+			const postKey = encodeURIComponent(postId);
+			const [likes, comments] = await Promise.all([
+				request(`post_likes?post_id=eq.${postKey}&select=id`),
+				request(
+					`post_comments?post_id=eq.${postKey}&select=username,email,content,created_at&order=created_at.desc`,
+				),
+			]);
+			likeCount.textContent = `${likes.length} 个赞`;
+			renderComments(comments);
+		};
+
+		renderProfile();
+
+		if (!isConfigured) {
+			backendStatus.textContent =
+				'互动云端未配置（缺少 PUBLIC_SUPABASE_URL / PUBLIC_SUPABASE_ANON_KEY），暂不可用。';
+			likeBtn.disabled = true;
+			commentInput.disabled = true;
+			commentForm.querySelector('button').disabled = true;
+			profileForm.querySelector('button').disabled = true;
+			return;
+		}
+
+		backendStatus.textContent = '互动数据将保存到云端。';
+
+		refreshRemoteData().catch(() => {
+			backendStatus.textContent = '云端连接失败，请稍后刷新重试。';
+		});
+
+		profileForm.addEventListener('submit', async (event) => {
 			event.preventDefault();
 			const username = nameInput.value.trim();
 			const email = emailInput.value.trim();
@@ -242,32 +306,46 @@ const { postId } = Astro.props;
 			}
 
 			saveProfile({ username, email });
-			profileStatus.textContent = '资料已保存，可以点赞和评论了。';
-			render();
+			profileStatus.textContent = '资料保存中...';
+
+			try {
+				await request('visitor_profiles', {
+					method: 'POST',
+					body: [{ email, username }],
+					prefer: 'resolution=merge-duplicates,return=minimal',
+				});
+				profileStatus.textContent = '资料已保存，可以点赞和评论了。';
+			} catch {
+				profileStatus.textContent = '资料已保存到本地，但云端同步失败。';
+			}
 		});
 
-		likeBtn.addEventListener('click', () => {
+		likeBtn.addEventListener('click', async () => {
 			const profile = loadProfile();
 			if (!profile.username || !profile.email) {
 				profileStatus.textContent = '请先登记用户名和邮箱后再点赞。';
 				return;
 			}
 
-			const { store, postData } = getPostData();
-			if (postData.likedBy.includes(profile.email)) {
-				commentStatus.textContent = '你已经点过赞了。';
-				return;
+			commentStatus.textContent = '正在点赞...';
+			try {
+				await request('post_likes', {
+					method: 'POST',
+					body: [{ post_id: postId, email: profile.email }],
+					prefer: 'return=minimal',
+				});
+				commentStatus.textContent = '点赞成功。';
+				await refreshRemoteData();
+			} catch (error) {
+				if (error.status === 409 || String(error.message).includes('duplicate key')) {
+					commentStatus.textContent = '你已经点过赞了。';
+					return;
+				}
+				commentStatus.textContent = '点赞失败，请稍后重试。';
 			}
-
-			postData.likes += 1;
-			postData.likedBy.push(profile.email);
-			store[postId] = postData;
-			saveStore(store);
-			commentStatus.textContent = '点赞成功。';
-			render();
 		});
 
-		commentForm.addEventListener('submit', (event) => {
+		commentForm.addEventListener('submit', async (event) => {
 			event.preventDefault();
 			const profile = loadProfile();
 			const content = commentInput.value.trim();
@@ -282,21 +360,25 @@ const { postId } = Astro.props;
 				return;
 			}
 
-			const { store, postData } = getPostData();
-			postData.comments.push({
-				username: profile.username,
-				email: profile.email,
-				content,
-				createdAt: Date.now(),
-			});
-			store[postId] = postData;
-			saveStore(store);
-			commentInput.value = '';
-			commentStatus.textContent = '评论已发布。';
-			render();
+			commentStatus.textContent = '正在发布评论...';
+			try {
+				await request('post_comments', {
+					method: 'POST',
+					body: [{
+						post_id: postId,
+						email: profile.email,
+						username: profile.username,
+						content,
+					}],
+					prefer: 'return=minimal',
+				});
+				commentInput.value = '';
+				commentStatus.textContent = '评论已发布。';
+				await refreshRemoteData();
+			} catch {
+				commentStatus.textContent = '评论发布失败，请稍后重试。';
+			}
 		});
-
-		render();
 	});
 })();
 </script>
