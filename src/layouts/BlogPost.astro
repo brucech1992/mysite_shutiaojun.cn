@@ -6,6 +6,7 @@ import EngagementPanel from '../components/EngagementPanel.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import PostStats from '../components/PostStats.astro';
 import { getColumnMeta } from '../lib/columns';
 
 type Props = CollectionEntry<'blog'>['data'] & { postId: string };
@@ -122,6 +123,7 @@ const columnMeta = getColumnMeta(column);
 							}
 						</div>
 					</div>
+					<PostStats postId={postId} />
 					<slot />
 					{resources && resources.length > 0 && (
 						<section class="resources">

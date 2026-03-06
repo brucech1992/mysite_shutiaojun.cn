@@ -265,6 +265,14 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
 			});
 		};
 
+		const emitStatsUpdate = (likes, comments) => {
+			window.dispatchEvent(
+				new CustomEvent('sj:post-stats-update', {
+					detail: { postId, likes, comments },
+				}),
+			);
+		};
+
 		const refreshRemoteData = async () => {
 			const postKey = encodeURIComponent(postId);
 			const [likes, comments] = await Promise.all([
@@ -275,6 +283,7 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
 			]);
 			likeCount.textContent = `${likes.length} 个赞`;
 			renderComments(comments);
+			emitStatsUpdate(likes.length, comments.length);
 		};
 
 		renderProfile();

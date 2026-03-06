@@ -24,14 +24,25 @@ create table if not exists public.post_comments (
   created_at timestamptz not null default now()
 );
 
+-- 4) Views (one view per browser token per post)
+create table if not exists public.post_views (
+  id bigint generated always as identity primary key,
+  post_id text not null,
+  viewer_token text not null,
+  created_at timestamptz not null default now(),
+  constraint post_views_unique unique (post_id, viewer_token)
+);
+
 -- Optional indexes for faster read
 create index if not exists idx_post_likes_post_id on public.post_likes(post_id);
 create index if not exists idx_post_comments_post_id_created_at on public.post_comments(post_id, created_at desc);
+create index if not exists idx_post_views_post_id on public.post_views(post_id);
 
 -- Enable RLS
 alter table public.visitor_profiles enable row level security;
 alter table public.post_likes enable row level security;
 alter table public.post_comments enable row level security;
+alter table public.post_views enable row level security;
 
 -- Public anonymous access policies (open write/read model)
 -- NOTE: This is convenient for low-risk public interaction. Add rate limit / anti-spam later.
@@ -61,4 +72,12 @@ for select to anon using (true);
 
 drop policy if exists "public write comments" on public.post_comments;
 create policy "public write comments" on public.post_comments
+for insert to anon with check (true);
+
+drop policy if exists "public read views" on public.post_views;
+create policy "public read views" on public.post_views
+for select to anon using (true);
+
+drop policy if exists "public write views" on public.post_views;
+create policy "public write views" on public.post_views
 for insert to anon with check (true);

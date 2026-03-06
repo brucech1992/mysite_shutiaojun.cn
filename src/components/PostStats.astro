@@ -1,0 +1,168 @@
+---
+interface Props {
+	postId: string;
+}
+
+const { postId } = Astro.props;
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL ?? '';
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
+---
+
+<section class="post-stats" data-post-id={postId} data-supabase-url={supabaseUrl} data-supabase-key={supabaseAnonKey}>
+	<div class="stat-item">
+		<span class="stat-label">点赞</span>
+		<strong class="stat-value likes">--</strong>
+	</div>
+	<div class="stat-item">
+		<span class="stat-label">评论</span>
+		<strong class="stat-value comments">--</strong>
+	</div>
+	<div class="stat-item">
+		<span class="stat-label">阅读总数</span>
+		<strong class="stat-value views">--</strong>
+	</div>
+</section>
+
+<style>
+	.post-stats {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.6rem;
+		margin: 0.3rem 0 1.2rem;
+	}
+	.stat-item {
+		padding: 0.55rem 0.65rem;
+		border: 1px solid #d9e6ee;
+		border-radius: 10px;
+		background: #f6fbff;
+		display: grid;
+		gap: 0.15rem;
+	}
+	.stat-label {
+		font-size: 0.78rem;
+		color: #5f7381;
+	}
+	.stat-value {
+		font-size: 1rem;
+		line-height: 1.2;
+		color: #2c4454;
+	}
+	@media (max-width: 720px) {
+		.post-stats {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<script is:inline>
+(() => {
+	const VIEWER_TOKEN_KEY = 'sj_viewer_token_v1';
+	const VIEW_MARK_PREFIX = 'sj_view_mark_v1:';
+
+	const ensureViewerToken = () => {
+		const current = localStorage.getItem(VIEWER_TOKEN_KEY);
+		if (current) return current;
+		const token =
+			typeof crypto !== 'undefined' && crypto.randomUUID
+				? crypto.randomUUID()
+				: `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+		localStorage.setItem(VIEWER_TOKEN_KEY, token);
+		return token;
+	};
+
+	document.querySelectorAll('.post-stats[data-post-id]').forEach((root) => {
+		const postId = root.getAttribute('data-post-id') || 'default';
+		const supabaseUrl = (root.getAttribute('data-supabase-url') || '').replace(/\/$/, '');
+		const supabaseKey = root.getAttribute('data-supabase-key') || '';
+		const likesEl = root.querySelector('.likes');
+		const commentsEl = root.querySelector('.comments');
+		const viewsEl = root.querySelector('.views');
+
+		const setCounts = ({ likes, comments, views }) => {
+			if (typeof likes === 'number') likesEl.textContent = String(likes);
+			if (typeof comments === 'number') commentsEl.textContent = String(comments);
+			if (typeof views === 'number') viewsEl.textContent = String(views);
+		};
+
+		if (!supabaseUrl || !supabaseKey) {
+			setCounts({ likes: 0, comments: 0, views: 0 });
+			return;
+		}
+
+		const request = async (path, { method = 'GET', body, prefer } = {}) => {
+			const headers = {
+				apikey: supabaseKey,
+				Authorization: `Bearer ${supabaseKey}`,
+			};
+
+			if (method !== 'GET') {
+				headers['Content-Type'] = 'application/json';
+			}
+			if (prefer) {
+				headers['Prefer'] = prefer;
+			}
+
+			const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
+				method,
+				headers,
+				body: body ? JSON.stringify(body) : undefined,
+			});
+
+			if (!response.ok) {
+				const detail = await response.text();
+				const error = new Error(detail || `HTTP ${response.status}`);
+				error.status = response.status;
+				throw error;
+			}
+
+			const contentType = response.headers.get('content-type') || '';
+			if (contentType.includes('application/json')) {
+				return response.json();
+			}
+			return [];
+		};
+
+		const refreshCounts = async () => {
+			const postKey = encodeURIComponent(postId);
+			const [likes, comments, views] = await Promise.all([
+				request(`post_likes?post_id=eq.${postKey}&select=id`),
+				request(`post_comments?post_id=eq.${postKey}&select=id`),
+				request(`post_views?post_id=eq.${postKey}&select=id`),
+			]);
+			setCounts({ likes: likes.length, comments: comments.length, views: views.length });
+		};
+
+		const ensureViewRecorded = async () => {
+			const markerKey = `${VIEW_MARK_PREFIX}${postId}`;
+			if (localStorage.getItem(markerKey)) return;
+
+			const viewerToken = ensureViewerToken();
+			try {
+				await request('post_views', {
+					method: 'POST',
+					body: [{ post_id: postId, viewer_token: viewerToken }],
+					prefer: 'return=minimal',
+				});
+				localStorage.setItem(markerKey, '1');
+			} catch (error) {
+				if (error.status === 409 || String(error.message).includes('duplicate key')) {
+					localStorage.setItem(markerKey, '1');
+					return;
+				}
+				throw error;
+			}
+		};
+
+		ensureViewRecorded()
+			.then(refreshCounts)
+			.catch(() => {
+				setCounts({ likes: 0, comments: 0, views: 0 });
+			});
+
+		window.addEventListener('sj:post-stats-update', (event) => {
+			if (!event.detail || event.detail.postId !== postId) return;
+			setCounts({ likes: event.detail.likes, comments: event.detail.comments });
+		});
+	});
+})();
+</script>

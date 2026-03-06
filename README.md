@@ -6,10 +6,11 @@
 - 蕃茄酱
 - 海鸥看过
 
-网站已接入云端互动（点赞 + 评论）：
+网站已接入云端互动（点赞 + 评论 + 阅读总数）：
 
 - 用户先登记 `用户名 + 联系邮箱`
 - 点赞与评论数据写入 Supabase
+- 阅读总数按浏览器去重后写入 Supabase
 - 评论区邮箱默认脱敏显示
 
 ## 本地开发
@@ -29,6 +30,7 @@ npm run build
 
 1. 在 Supabase 新建项目。
 2. 打开 SQL Editor，执行 [`supabase/engagement.sql`](./supabase/engagement.sql)。
+   已经执行过旧版 SQL 的话，也请重新执行一遍，新增了 `post_views` 表用于阅读总数。
 3. 复制 `.env.example` 为 `.env`，填入：
 
 ```bash
