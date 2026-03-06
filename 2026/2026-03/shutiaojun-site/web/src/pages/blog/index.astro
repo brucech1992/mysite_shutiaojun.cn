@@ -1,0 +1,23 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`栏目迁移 - ${SITE_TITLE}`} description="站点栏目已升级为三个独立版块" />
+		<meta http-equiv="refresh" content="0;url=/yuanwei" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>栏目已升级</h1>
+			<p>旧版 /blog 已迁移到三栏目结构。</p>
+			<p><a href="/yuanwei">前往原味薯条</a></p>
+		</main>
+		<Footer />
+	</body>
+</html>

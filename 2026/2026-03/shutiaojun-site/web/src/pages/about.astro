@@ -1,0 +1,30 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`关于 - ${SITE_TITLE}`} description="关于薯条菌与这个网站" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>关于薯条菌</h1>
+			<p>你好，我是薯条菌。这个网站是我的长期写作实验场，用来持续记录观察、判断与复盘。</p>
+			<p>我希望把“今天看到的现象”变成“明天可以使用的认知工具”。</p>
+			<h2>目前的内容结构</h2>
+			<ul>
+				<li><strong>原味薯条</strong>：世界发生什么事，实事评论，商业财经与民生议题。</li>
+				<li><strong>蕃茄酱</strong>：深度思考、根本逻辑、长期价值的写作。</li>
+				<li><strong>海鸥看过</strong>：书籍、网站、自媒体与读后感推荐。</li>
+			</ul>
+			<h2>为什么做这个站</h2>
+			<p>为了在信息过载时代，练习更慢但更稳的思考方式。</p>
+		</main>
+		<Footer />
+	</body>
+</html>

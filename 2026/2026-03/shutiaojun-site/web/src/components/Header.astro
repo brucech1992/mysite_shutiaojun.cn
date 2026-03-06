@@ -1,0 +1,97 @@
+---
+import HeroSeaside from '../assets/hero-seaside.png';
+import { COLUMNS } from '../lib/columns';
+
+interface Props {
+	hideColumn?: string;
+}
+
+const { hideColumn } = Astro.props;
+const navColumns = COLUMNS.filter((column) => column.slug !== hideColumn);
+---
+
+<header class="site-hero">
+	<a class="hero-link" href="/" style={`--hero-bg: url(${HeroSeaside.src})`} aria-label="返回首页">
+		<div class="hero-copy">
+			<h1>整点儿薯条吧</h1>
+			<p>薯条菌的观察、思考与推荐，分成三种味道慢慢更新。</p>
+		</div>
+		<div class="hero-spacer" aria-hidden="true"></div>
+	</a>
+	<nav class="hero-nav" aria-label="栏目导航">
+		{navColumns.map((column) => (
+			<a href={`/${column.slug}`}>{column.name}</a>
+		))}
+	</nav>
+</header>
+
+<style>
+	.site-hero {
+		width: min(var(--site-width), calc(100% - 2rem));
+		margin: 0 auto;
+	}
+	.hero-link {
+		display: block;
+		text-decoration: none;
+		padding: 3rem 1.1rem 1.2rem;
+		background: var(--hero-bg);
+		background-size: cover;
+		background-position: center;
+		border: 1px solid #d8dee4;
+		border-top: 0;
+		text-align: center;
+	}
+	.hero-copy h1 {
+		margin: 0;
+		font-size: clamp(2.25rem, 4.4vw, 3.1rem);
+		font-family: var(--font-display);
+		font-weight: 400;
+		letter-spacing: 0.04em;
+		color: #f7fbff;
+	}
+	.hero-copy p {
+		margin: 0.5rem 0 0;
+		font-size: 0.95rem;
+		color: #f2f8fc;
+	}
+	.hero-spacer {
+		width: fit-content;
+		max-width: 100%;
+		margin: 1.1rem auto 0;
+		padding-top: 0.65rem;
+		border-top: 1px solid rgba(243, 249, 253, 0.7);
+		min-height: calc(0.9rem * 1.8);
+	}
+	.hero-nav {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		gap: 0.45rem;
+		margin-top: 0.75rem;
+	}
+	.hero-nav a {
+		display: inline-flex;
+		align-items: center;
+		font-size: 0.78rem;
+		line-height: 1.35;
+		letter-spacing: 0.02em;
+		padding: 0.16rem 0.52rem;
+		text-decoration: none;
+		color: #1f252a;
+		background: rgba(24, 29, 34, 0.18);
+	}
+	.hero-nav a:hover,
+	.hero-nav a.active {
+		background: #a4abb2;
+		color: #101317;
+	}
+	@media (max-width: 720px) {
+		.site-hero {
+			width: calc(100% - 1.2rem);
+		}
+		.hero-link {
+			padding: 3rem 1.1rem 1.2rem;
+			background-position: left center;
+		}
+	}
+</style>
