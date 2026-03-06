@@ -1,151 +1,76 @@
 ---
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
 import AboutImage from '../assets/blog-placeholder-about.jpg';
-import CoverOne from '../assets/blog-placeholder-1.jpg';
-import CoverTwo from '../assets/blog-placeholder-2.jpg';
-import CoverThree from '../assets/blog-placeholder-3.jpg';
-import CoverFour from '../assets/blog-placeholder-4.jpg';
-import CoverFive from '../assets/blog-placeholder-5.jpg';
 import HeroSeaside from '../assets/hero-seaside.png';
 import { SITE_DESCRIPTION } from '../consts';
+import { COLUMNS } from '../lib/columns';
+
 const HOME_TITLE = '朋友你好，来根薯条～';
 
-const categories = [
-	{
-		label: '设计思考',
-		href: '/blog',
-	},
-	{
-		label: '项目复盘',
-		href: '/projects',
-	},
-	{
-		label: '生活随记',
-		href: '/notes',
-	},
-	{
-		label: '关于我',
-		href: '/about',
-	},
-];
+const allPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
 
-const posts = [
-	{
-		title: '把一个复杂项目拆成可执行的 5 个动作',
-		summary: '从目标、节奏到交付标准，这篇记录我如何把“想做”变成“能持续做”。',
-		date: '2026-03-05',
-		category: '项目复盘',
-		href: '/projects',
-		image: CoverOne,
-	},
-	{
-		title: '网站改版这次我学到的三个关键判断',
-		summary: '不是追求更花哨，而是让信息更清楚、更新更轻松、上线更稳定。',
-		date: '2026-03-04',
-		category: '设计思考',
-		href: '/blog',
-		image: CoverTwo,
-	},
-	{
-		title: 'AI 协作写站点：流程比工具更重要',
-		summary: '我把任务拆成内容、设计、前端、巡检四层，交付速度明显提升。',
-		date: '2026-03-03',
-		category: '实践记录',
-		href: '/blog',
-		image: CoverThree,
-	},
-	{
-		title: '把日常笔记变成可复用的知识资产',
-		summary: '笔记不是存档，而是下一次行动的脚手架。',
-		date: '2026-03-02',
-		category: '生活随记',
-		href: '/notes',
-		image: CoverFour,
-	},
-	{
-		title: '为什么我决定把“做事过程”公开出来',
-		summary: '公开不是表演，是为了建立反馈回路，也让自己更诚实地迭代。',
-		date: '2026-03-01',
-		category: '关于我',
-		href: '/about',
-		image: CoverFive,
-	},
-];
+const columnSections = COLUMNS.map((column) => ({
+	...column,
+	posts: allPosts.filter((post) => post.data.column === column.slug).slice(0, 2),
+}));
 ---
 
 <!doctype html>
 <html lang="zh-CN">
 	<head><BaseHead title={HOME_TITLE} description={SITE_DESCRIPTION} /></head>
 	<body>
+		<Header />
 		<main class="home-shell">
 			<header class="page-branding" style={`--hero-bg: url(${HeroSeaside.src})`}>
-				<p class="brand-kicker">Shutiaojun Journal</p>
+				<p class="brand-kicker">Shutiaojun Studio</p>
 				<h1>整点儿薯条吧</h1>
-				<p class="brand-desc">记录设计思考、项目复盘与生活灵感。</p>
-				<nav class="topic-nav" aria-label="主页分类导航">
-					{categories.map((item) => (
-						<a href={item.href}>{item.label}</a>
-					))}
-				</nav>
+				<p class="brand-desc">薯条菌的观察、思考与推荐，分成三种味道慢慢更新。</p>
 			</header>
 
-			<section class="content-layout">
-				<div class="post-stream">
-					{posts.map((post, index) => (
-						<article
-							class:list={['post-card', index > 0 && 'post-card-compact']}
-							style={`animation-delay:${index * 80}ms`}
-						>
-							<a class:list={['post-link', index > 0 && 'post-link-compact']} href={post.href}>
-								<div class:list={['post-thumb', index > 0 && 'post-thumb-compact']}>
-									<Image
-										src={post.image}
-										width={index === 0 ? 880 : 320}
-										height={index === 0 ? 478 : 320}
-										alt={post.title}
-									/>
-								</div>
-								<div class:list={['post-copy', index > 0 && 'post-copy-compact']}>
-									<p class="post-meta">{post.category} · {post.date}</p>
-									<h2>{post.title}</h2>
-									<p>{post.summary}</p>
-									<span class="read-more">阅读全文</span>
-								</div>
-							</a>
-						</article>
-					))}
-				</div>
-
-				<aside class="sidebar" id="contact">
-					<section class="widget profile-widget">
-						<Image src={AboutImage} width={320} height={220} alt="薯条君头像" />
-						<h3>关于我</h3>
-						<p>
-							我是薯条君，正在持续记录做事的方法、项目过程和真实生活。
-							欢迎你来这里一起交流。
-						</p>
-						<a href="/about">了解更多</a>
-					</section>
-
-					<section class="widget">
-						<h3>快速入口</h3>
-						<ul>
-							<li><a href="/projects">项目案例</a></li>
-							<li><a href="/blog">最新文章</a></li>
-							<li><a href="/notes">生活笔记</a></li>
-							<li><a href="/about">个人介绍</a></li>
-						</ul>
-					</section>
-
-					<section class="widget">
-						<h3>联系我</h3>
-						<p>合作、交流或提问都可以直接发邮件。</p>
-						<a class="contact-btn" href="mailto:hello@shutiaojun.cn">hello@shutiaojun.cn</a>
-					</section>
-				</aside>
+			<section class="column-grid">
+				{columnSections.map((section) => (
+					<article class="column-block" style={`--accent:${section.accent};--soft:${section.soft};`}>
+						<div class="column-head">
+							<h2>{section.name}</h2>
+							<p>{section.summary}</p>
+							<p class="column-desc">{section.description}</p>
+						</div>
+						<div class="column-posts">
+							{section.posts.map((post) => (
+								<a class="post-card" href={`/${section.slug}/${post.id}/`}>
+									{post.data.heroImage && (
+										<Image src={post.data.heroImage} width={320} height={180} alt={post.data.title} />
+									)}
+									<div class="post-copy">
+										<p class="post-date">{post.data.pubDate.toISOString().slice(0, 10)}</p>
+										<h3>{post.data.title}</h3>
+										<p>{post.data.description}</p>
+									</div>
+								</a>
+							))}
+						</div>
+						<a class="more-link" href={`/${section.slug}/`}>查看更多</a>
+					</article>
+				))}
 			</section>
+
+			<aside class="home-contact" id="contact">
+				<section class="profile-widget">
+					<Image src={AboutImage} width={220} height={220} alt="薯条菌头像" />
+					<div>
+						<h3>关于薯条菌</h3>
+						<p>我在这个站点持续写三类内容：时事观察、深度思考、输入推荐。</p>
+						<p>欢迎你留言交流，也可以直接发邮件。</p>
+						<a href="mailto:hello@shutiaojun.cn">hello@shutiaojun.cn</a>
+					</div>
+				</section>
+			</aside>
 		</main>
 		<Footer />
 	</body>
@@ -154,7 +79,7 @@ const posts = [
 <style>
 	:global(body) {
 		background: #f5f9fc;
-		color: #677580;
+		color: #4b6070;
 		font-size: 17px;
 		line-height: 1.8;
 		font-family: var(--font-body);
@@ -165,20 +90,16 @@ const posts = [
 		padding: 0;
 	}
 	.home-shell {
-		--sky-blue: #b9d9ec;
-		--sea-blue: #8bb4c8;
-		--cloud-white: #f5f9fc;
-		--gull-gray: #677580;
-		width: min(1080px, calc(100% - 2rem));
+		width: min(1120px, calc(100% - 2rem));
 		margin: 0 auto;
-		padding: 0 0 4rem;
+		padding: 0 0 3rem;
 	}
 	.page-branding {
-		padding: 2.9rem 0 0;
+		padding: 2.8rem 1rem 2.2rem;
 		text-align: center;
-		border: 1px solid var(--sea-blue);
+		border: 1px solid #8bb4c8;
 		border-top: 0;
-		border-radius: 0 0 12px 12px;
+		border-radius: 0 0 14px 14px;
 		background: var(--hero-bg);
 		background-position: center;
 		background-repeat: no-repeat;
@@ -186,214 +107,138 @@ const posts = [
 	}
 	.brand-kicker {
 		margin: 0;
-		color: var(--cloud-white);
+		color: #f5f9fc;
 		text-transform: uppercase;
 		letter-spacing: 0.16em;
 		font-size: 0.72rem;
 		font-weight: 500;
-		text-shadow: 0 1px 2px rgba(103, 117, 128, 0.4);
+		text-shadow: 0 1px 2px rgba(76, 95, 108, 0.5);
 	}
 	h1 {
-		margin: 0.35rem 0 0.22rem;
-		font-size: clamp(2.5rem, 6vw, 3.5rem);
+		margin: 0.38rem 0 0.32rem;
+		font-size: clamp(2.45rem, 6vw, 3.35rem);
 		font-family: var(--font-display);
 		font-weight: 400;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.04em;
 		line-height: 1.15;
-		color: var(--cloud-white);
-		text-shadow: 0 2px 5px rgba(103, 117, 128, 0.44);
+		color: #f5f9fc;
+		text-shadow: 0 2px 5px rgba(76, 95, 108, 0.5);
 	}
 	.brand-desc {
 		margin: 0;
-		color: var(--cloud-white);
+		color: #f5f9fc;
 		font-size: 0.95rem;
-		letter-spacing: 0.02em;
-		text-shadow: 0 1px 3px rgba(103, 117, 128, 0.45);
+		text-shadow: 0 1px 3px rgba(76, 95, 108, 0.45);
 	}
-	.topic-nav {
-		margin-top: 1.6rem;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 1.5rem;
-		padding: 0.95rem 0;
-		border-top: 1px solid rgba(245, 249, 252, 0.65);
-		background: rgba(245, 249, 252, 0.84);
-	}
-	.topic-nav a {
-		font-size: 0.92rem;
-		color: var(--gull-gray);
-		font-family: var(--font-heading);
-		text-decoration: none;
-		letter-spacing: 0.03em;
-		transition: color 0.2s ease;
-	}
-	.topic-nav a:hover {
-		color: var(--sea-blue);
-	}
-	.content-layout {
+	.column-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 290px;
-		gap: 2.2rem;
-		padding-top: 2.15rem;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+		padding-top: 1.6rem;
+	}
+	.column-block {
+		border: 1px solid #d9e6ee;
+		border-radius: 12px;
+		background: #ffffff;
+		overflow: hidden;
+		display: grid;
+		grid-template-rows: auto 1fr auto;
+	}
+	.column-head {
+		padding: 1rem;
+		background: var(--soft);
+		border-bottom: 1px solid #d9e6ee;
 	}
 	h2 {
-		margin: 0.6rem 0 0.5rem;
-		font-size: clamp(1.28rem, 2.5vw, 1.72rem);
-		font-family: var(--font-heading);
-		line-height: 1.4;
-		letter-spacing: 0.02em;
-		font-weight: 600;
+		margin: 0 0 0.5rem;
+		font-size: 1.4rem;
+		color: var(--accent);
 	}
-	h3 {
-		margin: 0 0 0.6rem;
-		font-size: 1.06rem;
-		font-family: var(--font-heading);
-		font-weight: 600;
-		letter-spacing: 0.03em;
-	}
-	p {
+	.column-head p {
 		margin: 0;
-		color: #5c5c5c;
+		font-size: 0.92rem;
+		color: #4f6472;
 	}
-	.post-stream {
-		min-width: 0;
+	.column-desc {
+		margin-top: 0.5rem;
+		font-size: 0.86rem;
+		color: #607885;
+	}
+	.column-posts {
+		padding: 0.8rem;
+		display: grid;
+		gap: 0.7rem;
 	}
 	.post-card {
-		padding-bottom: 2.1rem;
-		margin-bottom: 2.1rem;
-		border-bottom: 1px solid rgba(139, 180, 200, 0.45);
-		opacity: 0;
-		transform: translateY(10px);
-		animation: fade-up 0.55s ease forwards;
-	}
-	.post-card-compact {
-		padding-bottom: 1.2rem;
-		margin-bottom: 1.2rem;
-	}
-	.post-link {
-		display: block;
-		text-decoration: none;
-	}
-	.post-link-compact {
 		display: grid;
-		grid-template-columns: 146px minmax(0, 1fr);
-		gap: 0.9rem;
-		align-items: start;
+		grid-template-columns: 92px minmax(0, 1fr);
+		gap: 0.65rem;
+		text-decoration: none;
+		border: 1px solid #deebf3;
+		border-radius: 10px;
+		padding: 0.45rem;
+		background: #fff;
 	}
-	.post-thumb {
-		overflow: hidden;
-		border-radius: 4px;
-		background: var(--cloud-white);
-		margin-bottom: 1rem;
-		border: 1px solid rgba(139, 180, 200, 0.45);
-	}
-	.post-thumb-compact {
-		margin-bottom: 0;
-		aspect-ratio: 1 / 1;
-	}
-	.post-thumb img {
-		display: block;
+	.post-card img {
 		width: 100%;
-		height: auto;
-		transition: transform 0.4s ease;
-	}
-	.post-thumb-compact img {
-		height: 100%;
+		height: 92px;
 		object-fit: cover;
+		border-radius: 7px;
 	}
-	.post-link:hover .post-thumb img {
-		transform: scale(1.02);
-	}
-	.post-meta {
-		color: var(--gull-gray);
-		font-size: 0.78rem;
-		font-family: var(--font-body);
-		font-weight: 500;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
+	.post-copy h3 {
+		margin: 0.1rem 0 0.3rem;
+		font-size: 0.98rem;
+		line-height: 1.35;
+		color: #2d4353;
 	}
 	.post-copy p {
-		margin-bottom: 0.8rem;
-		color: var(--gull-gray);
-	}
-	.post-copy-compact h2 {
-		margin-top: 0.1rem;
-		font-size: clamp(1.04rem, 2vw, 1.22rem);
-		line-height: 1.45;
-	}
-	.post-copy-compact p {
-		margin-bottom: 0.5rem;
-		font-size: 0.92rem;
-	}
-	.read-more {
-		display: inline-block;
-		color: var(--sea-blue);
-		font-size: 0.86rem;
-		font-family: var(--font-heading);
-		letter-spacing: 0.03em;
-		border-bottom: 1px solid var(--sea-blue);
-		padding-bottom: 0.05rem;
-	}
-	.sidebar {
-		display: grid;
-		gap: 1rem;
-		align-content: start;
-	}
-	.widget {
-		border: 1px solid rgba(139, 180, 200, 0.5);
-		padding: 1rem;
-		background: rgba(245, 249, 252, 0.96);
-	}
-	.widget ul {
-		list-style: none;
-		padding: 0;
 		margin: 0;
-		display: grid;
-		gap: 0.5rem;
+		font-size: 0.82rem;
+		line-height: 1.45;
+		color: #5d7381;
 	}
-	.widget a {
-		color: var(--gull-gray);
+	.post-date {
+		letter-spacing: 0.05em;
+		font-size: 0.75rem;
+		color: #698394;
+	}
+	.more-link {
+		display: inline-block;
+		margin: 0 0.8rem 0.9rem;
+		color: var(--accent);
 		text-decoration: none;
-		font-size: 0.92rem;
-		font-family: var(--font-body);
+		border-bottom: 1px solid var(--accent);
+		width: fit-content;
 	}
-	.widget a:hover {
-		color: var(--sea-blue);
+	.home-contact {
+		margin-top: 1.2rem;
+	}
+	.profile-widget {
+		display: grid;
+		grid-template-columns: 220px minmax(0, 1fr);
+		gap: 1rem;
+		align-items: center;
+		padding: 1rem;
+		border: 1px solid #d9e6ee;
+		border-radius: 12px;
+		background: #ffffff;
 	}
 	.profile-widget img {
-		display: block;
-		margin-bottom: 0.7rem;
-		border-radius: 0;
+		border-radius: 10px;
+	}
+	.profile-widget h3 {
+		margin: 0 0 0.5rem;
+		font-size: 1.15rem;
 	}
 	.profile-widget p {
-		margin-bottom: 0.55rem;
-		font-size: 0.92rem;
+		margin: 0 0 0.5rem;
 	}
-	.contact-btn {
-		display: inline-block;
-		margin-top: 0.5rem;
-		padding-bottom: 0.15rem;
-		border-bottom: 1px solid var(--sea-blue);
+	.profile-widget a {
+		color: #2d5d79;
 	}
-	@keyframes fade-up {
-		from {
-			opacity: 0;
-			transform: translateY(10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-	@media (max-width: 980px) {
-		.content-layout {
+	@media (max-width: 1000px) {
+		.column-grid {
 			grid-template-columns: 1fr;
-			gap: 1.5rem;
-		}
-		.sidebar {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			align-items: start;
 		}
 	}
 	@media (max-width: 720px) {
@@ -403,18 +248,7 @@ const posts = [
 		.page-branding {
 			background-position: left center;
 		}
-		.post-link-compact {
-			grid-template-columns: 96px minmax(0, 1fr);
-			gap: 0.7rem;
-		}
-		.topic-nav {
-			gap: 0.85rem 1.1rem;
-			padding: 0.8rem 0;
-		}
-		h1 {
-			letter-spacing: 0.02em;
-		}
-		.sidebar {
+		.profile-widget {
 			grid-template-columns: 1fr;
 		}
 	}

@@ -1,0 +1,128 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { COLUMNS, type ColumnMeta } from '../../lib/columns';
+
+export async function getStaticPaths() {
+	const posts = (await getCollection('blog')).sort(
+		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+	);
+
+	return COLUMNS.map((column) => ({
+		params: { column: column.slug },
+		props: {
+			column,
+			posts: posts.filter((post) => post.data.column === column.slug),
+		},
+	}));
+}
+
+type Props = {
+	column: ColumnMeta;
+	posts: CollectionEntry<'blog'>[];
+};
+
+const { column, posts } = Astro.props;
+const pageTitle = `${column.name} - 薯条菌`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={pageTitle} description={column.summary} />
+		<style>
+			main {
+				width: min(1080px, calc(100% - 2rem));
+				max-width: none;
+				padding: 1.6rem 0 2.8rem;
+			}
+			.column-hero {
+				padding: 1.1rem 1.2rem;
+				border: 1px solid #d9e6ee;
+				border-radius: 12px;
+				background: var(--column-soft);
+			}
+			.column-hero h1 {
+				margin: 0;
+				font-size: clamp(1.9rem, 5vw, 2.6rem);
+				color: var(--column-accent);
+			}
+			.column-hero p {
+				margin: 0.6rem 0 0;
+				color: #536977;
+			}
+			.post-list {
+				margin-top: 1rem;
+				display: grid;
+				gap: 0.9rem;
+			}
+			.post-item {
+				display: grid;
+				grid-template-columns: 220px minmax(0, 1fr);
+				gap: 0.95rem;
+				padding: 0.7rem;
+				border: 1px solid #d9e6ee;
+				border-radius: 12px;
+				background: #ffffff;
+				text-decoration: none;
+			}
+			.post-item img {
+				height: 140px;
+				width: 100%;
+				object-fit: cover;
+				border-radius: 8px;
+			}
+			.post-item h2 {
+				margin: 0.2rem 0 0.5rem;
+				font-size: 1.35rem;
+				color: #2d4353;
+			}
+			.post-item p {
+				margin: 0;
+				color: #607481;
+			}
+			.meta {
+				font-size: 0.78rem;
+				letter-spacing: 0.06em;
+				color: #6c8797;
+			}
+			@media (max-width: 720px) {
+				main {
+					width: calc(100% - 1.2rem);
+				}
+				.post-item {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main style={`--column-accent:${column.accent};--column-soft:${column.soft};`}>
+			<section class="column-hero">
+				<h1>{column.name}</h1>
+				<p>{column.summary}</p>
+				<p>{column.description}</p>
+			</section>
+			<section class="post-list">
+				{posts.map((post) => (
+					<a class="post-item" href={`/${column.slug}/${post.id}/`}>
+						{post.data.heroImage && (
+							<Image src={post.data.heroImage} width={440} height={280} alt={post.data.title} />
+						)}
+						<div>
+							<p class="meta">{post.data.pubDate.toISOString().slice(0, 10)}</p>
+							<h2>{post.data.title}</h2>
+							<p>{post.data.description}</p>
+						</div>
+					</a>
+				))}
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

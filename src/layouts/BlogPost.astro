@@ -6,52 +6,96 @@ import EngagementPanel from '../components/EngagementPanel.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import { getColumnMeta } from '../lib/columns';
 
 type Props = CollectionEntry<'blog'>['data'] & { postId: string };
 
-const { title, description, pubDate, updatedDate, heroImage, postId } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, postId, column, resources } = Astro.props;
+const columnMeta = getColumnMeta(column);
 ---
 
-<html lang="en">
+<html lang="zh-CN">
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
 			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+				width: min(980px, calc(100% - 2rem));
+				max-width: none;
+				margin: 0 auto;
+				padding: 1.8rem 0 3rem;
+			}
+			.article-shell {
+				--accent: var(--column-accent);
+				--soft: var(--column-soft);
+				border: 1px solid #d9e6ee;
+				background: #ffffff;
+				border-radius: 14px;
+				overflow: hidden;
 			}
 			.hero-image {
-				width: 100%;
+				background: var(--soft);
+				padding: 1rem;
 			}
 			.hero-image img {
 				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
+				width: 100%;
+				border-radius: 10px;
 				box-shadow: var(--box-shadow);
 			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
+				width: min(760px, calc(100% - 2rem));
+				margin: 0 auto;
+				padding: 1.3rem 0 2rem;
 				color: rgb(var(--gray-dark));
 			}
 			.title {
 				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
+				padding-bottom: 0.8rem;
+				border-bottom: 1px solid #e3ecf2;
+			}
+			.pill {
+				display: inline-flex;
+				align-items: center;
+				font-size: 0.8rem;
+				padding: 0.2rem 0.6rem;
+				border: 1px solid var(--accent);
+				border-radius: 999px;
+				color: var(--accent);
+				text-decoration: none;
+				margin-bottom: 0.7rem;
 			}
 			.title h1 {
-				margin: 0 0 0.5em 0;
+				margin: 0.25rem 0 0.6rem;
+				line-height: 1.2;
 			}
 			.date {
-				margin-bottom: 0.5em;
+				margin-bottom: 0.4rem;
 				color: rgb(var(--gray));
+				font-size: 0.92rem;
 			}
 			.last-updated-on {
+				font-size: 0.88rem;
 				font-style: italic;
+			}
+			.resources {
+				margin-top: 2rem;
+				padding: 1rem;
+				border: 1px solid #d8e6ef;
+				border-radius: 12px;
+				background: var(--soft);
+			}
+			.resources h3 {
+				margin: 0 0 0.6rem;
+				font-size: 1.12rem;
+			}
+			.resources ul {
+				margin: 0;
+				padding-left: 1.1rem;
+				display: grid;
+				gap: 0.5rem;
+			}
+			.resources a {
+				color: var(--accent);
 			}
 		</style>
 	</head>
@@ -59,26 +103,39 @@ const { title, description, pubDate, updatedDate, heroImage, postId } = Astro.pr
 	<body>
 		<Header />
 		<main>
-			<article>
+			<article class="article-shell" style={`--column-accent:${columnMeta.accent};--column-soft:${columnMeta.soft};`}>
 				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+					{heroImage && <Image width={1020} height={510} src={heroImage} alt={title} />}
 				</div>
 				<div class="prose">
 					<div class="title">
+						<a class="pill" href={`/${columnMeta.slug}`}>{columnMeta.name}</a>
+						<h1>{title}</h1>
 						<div class="date">
-							<FormattedDate date={pubDate} />
+							发表于 <FormattedDate date={pubDate} />
 							{
 								updatedDate && (
 									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
+										最后更新于 <FormattedDate date={updatedDate} />
 									</div>
 								)
 							}
 						</div>
-						<h1>{title}</h1>
-						<hr />
 					</div>
 					<slot />
+					{resources && resources.length > 0 && (
+						<section class="resources">
+							<h3>延伸阅读 / 相关链接</h3>
+							<ul>
+								{resources.map((item) => (
+									<li>
+										<a href={item.url} target="_blank" rel="noreferrer">{item.title}</a>
+										{item.note && <span> · {item.note}</span>}
+									</li>
+								))}
+							</ul>
+						</section>
+					)}
 					<EngagementPanel postId={postId} />
 				</div>
 			</article>

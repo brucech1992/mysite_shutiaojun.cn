@@ -152,6 +152,21 @@ const { postId } = Astro.props;
 		}
 	};
 
+	const maskEmail = (email) => {
+		if (!email || !email.includes('@')) return '***';
+		const [local, domain] = email.split('@');
+		if (!local || !domain) return '***';
+		const first = local[0] || '*';
+		const domainParts = domain.split('.');
+		if (domainParts.length < 2) {
+			return `${first}***@${domain}`;
+		}
+		const domainHead = domainParts[0];
+		const suffix = domainParts.slice(1).join('.');
+		const maskedDomainHead = domainHead.length > 2 ? `${domainHead.slice(0, 2)}***` : `${domainHead[0]}***`;
+		return `${first}***@${maskedDomainHead}.${suffix}`;
+	};
+
 	const loadStore = () => parseJson(localStorage.getItem(STORE_KEY));
 	const saveStore = (store) => localStorage.setItem(STORE_KEY, JSON.stringify(store));
 	const loadProfile = () => parseJson(localStorage.getItem(PROFILE_KEY));
@@ -205,7 +220,7 @@ const { postId } = Astro.props;
 
 					const meta = document.createElement('p');
 					meta.className = 'comment-meta';
-					meta.textContent = `${item.username} · ${item.email} · ${new Date(item.createdAt).toLocaleString()}`;
+					meta.textContent = `${item.username} · ${maskEmail(item.email)} · ${new Date(item.createdAt).toLocaleString()}`;
 
 					const body = document.createElement('p');
 					body.className = 'comment-body';

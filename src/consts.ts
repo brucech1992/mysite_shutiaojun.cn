@@ -1,2 +1,3 @@
-export const SITE_TITLE = '薯条君 · 个人网站';
-export const SITE_DESCRIPTION = '生命的意义在于整点薯条。这里分享我的经历与思考。';
+export const SITE_TITLE = '薯条菌 · 个人网站';
+export const SITE_DESCRIPTION =
+	'整点儿薯条，但更认真地看世界。这里持续记录时事观察、深度思考与高质量内容推荐。';

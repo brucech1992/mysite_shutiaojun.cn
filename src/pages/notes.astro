@@ -7,19 +7,16 @@ import { SITE_TITLE } from '../consts';
 
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <BaseHead title={`笔记 - ${SITE_TITLE}`} description="短笔记与碎片想法" />
-  </head>
-  <body>
-    <Header />
-    <main>
-      <h1>笔记</h1>
-      <p>这里记录短想法、灵感和当天值得记住的一句话。</p>
-      <ul>
-        <li>做复杂系统时，先定义角色边界，再谈效率。</li>
-        <li>每次复盘都应该留下可复用规则，而不是情绪。</li>
-      </ul>
-    </main>
-    <Footer />
-  </body>
+	<head>
+		<BaseHead title={`栏目迁移 - ${SITE_TITLE}`} description="站点栏目已升级为三个独立版块" />
+		<meta http-equiv="refresh" content="0;url=/fanqiejiang" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>栏目已升级</h1>
+			<p>旧版“笔记”页面已并入 <a href="/fanqiejiang">蕃茄酱</a>。</p>
+		</main>
+		<Footer />
+	</body>
 </html>

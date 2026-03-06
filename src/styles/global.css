@@ -5,15 +5,22 @@
  */
 
 :root {
-	--accent: #111111;
-	--accent-dark: #1f2937;
+	--accent: #2d5d79;
+	--accent-dark: #1f4256;
 	--black: 17, 17, 17;
 	--gray: 107, 114, 128;
 	--gray-light: 229, 231, 235;
 	--gray-dark: 31, 41, 55;
+	--sky-blue: #b9d9ec;
+	--sea-blue: #8bb4c8;
+	--cloud-white: #f5f9fc;
+	--gull-gray: #677580;
 	--font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
 	--font-heading: "Noto Serif SC", "Songti SC", serif;
 	--font-display: "ZCOOL XiaoWei", "Noto Serif SC", serif;
+	--radius-sm: 8px;
+	--radius-md: 12px;
+	--radius-lg: 16px;
 	--box-shadow:
 		0 2px 6px rgba(17, 17, 17, 0.06), 0 8px 24px rgba(17, 17, 17, 0.08), 0 16px 32px
 		rgba(17, 17, 17, 0.08);
@@ -38,7 +45,6 @@ body {
 	padding: 0;
 	text-align: left;
 	background: #ffffff;
-	background-size: 100% 600px;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--gray-dark));
@@ -107,7 +113,7 @@ table {
 img {
 	max-width: 100%;
 	height: auto;
-	border-radius: 8px;
+	border-radius: var(--radius-sm);
 }
 code {
 	padding: 2px 5px;
@@ -116,7 +122,7 @@ code {
 }
 pre {
 	padding: 1.5em;
-	border-radius: 8px;
+	border-radius: var(--radius-sm);
 }
 pre > code {
 	all: unset;
@@ -148,12 +154,8 @@ hr {
 	height: 1px;
 	width: 1px;
 	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
 	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
 	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
 	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }
