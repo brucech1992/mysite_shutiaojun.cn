@@ -19,6 +19,11 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+._*
+**/._*
 
 # jetbrains setting folder
 .idea/
+
+# local symlink moved out of repo
+agents

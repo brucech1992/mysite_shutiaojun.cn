@@ -26,11 +26,14 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: shutiaowebsite/package-lock.json
 
       - name: Install dependencies
+        working-directory: shutiaowebsite
         run: npm ci
 
       - name: Build site
+        working-directory: shutiaowebsite
         env:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
@@ -42,7 +45,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./shutiaowebsite/dist
 
   deploy:
     needs: build
