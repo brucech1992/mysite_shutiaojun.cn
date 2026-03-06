@@ -16,6 +16,7 @@ const navColumns = COLUMNS.filter((column) => column.slug !== hideColumn);
 			<h1>整点儿薯条吧</h1>
 			<p>薯条菌的观察、思考与推荐，分成三种味道慢慢更新。</p>
 		</div>
+		<div class="hero-spacer" aria-hidden="true"></div>
 	</a>
 	<nav class="hero-nav" aria-label="栏目导航">
 		{navColumns.map((column) => (
@@ -32,7 +33,7 @@ const navColumns = COLUMNS.filter((column) => column.slug !== hideColumn);
 	.hero-link {
 		display: block;
 		text-decoration: none;
-		padding: 3rem 1.1rem 3.35rem;
+		padding: 3rem 1.1rem 1.2rem;
 		background: var(--hero-bg);
 		background-size: cover;
 		background-position: center;
@@ -53,12 +54,20 @@ const navColumns = COLUMNS.filter((column) => column.slug !== hideColumn);
 		font-size: 0.95rem;
 		color: #f2f8fc;
 	}
+	.hero-spacer {
+		width: fit-content;
+		max-width: 100%;
+		margin: 1.1rem auto 0;
+		padding-top: 0.65rem;
+		border-top: 1px solid rgba(243, 249, 253, 0.7);
+		min-height: calc(0.9rem * 1.8);
+	}
 	.hero-nav {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-start;
 		gap: 0.45rem;
-		margin-top: 0.55rem;
+		margin-top: 0.75rem;
 	}
 	.hero-nav a {
 		display: inline-flex;
@@ -81,7 +90,7 @@ const navColumns = COLUMNS.filter((column) => column.slug !== hideColumn);
 			width: calc(100% - 1.2rem);
 		}
 		.hero-link {
-			padding: 2.6rem 1rem 2.9rem;
+			padding: 3rem 1.1rem 1.2rem;
 			background-position: left center;
 		}
 	}
