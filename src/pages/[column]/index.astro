@@ -4,6 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
 import SiteSidebar from '../../components/SiteSidebar.astro';
 import { COLUMNS, type ColumnMeta } from '../../lib/columns';
 import { buildPostRouteMap, buildTagItems, sortPostsByViews } from '../../lib/content-helpers';
@@ -50,18 +51,6 @@ const tags = buildTagItems(allPosts, { limit: 16 });
 				display: grid;
 				grid-template-columns: minmax(0, 1fr) 300px;
 				gap: 1.4rem;
-			}
-			.return-link {
-				margin-bottom: 0.85rem;
-			}
-			.column-switch {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 0.45rem;
-				margin: 0 0 0.85rem;
-			}
-			.column-switch .outline-link {
-				font-size: 0.81rem;
 			}
 			.column-hero {
 				padding: 0.95rem 1rem;
@@ -167,15 +156,10 @@ const tags = buildTagItems(allPosts, { limit: 16 });
 		</style>
 	</head>
 	<body>
+		<Header />
 		<main>
 			<section class="content-layout">
 				<div>
-					<a class="outline-link return-link" href="/">← 返回首页</a>
-					<nav class="column-switch" aria-label="栏目切换">
-						{COLUMNS.map((item) => (
-							<a class="outline-link" href={`/${item.slug}`}>{item.name}</a>
-						))}
-					</nav>
 					<section class="column-hero">
 						<h1>{column.name}</h1>
 						<p>{column.summary}</p>

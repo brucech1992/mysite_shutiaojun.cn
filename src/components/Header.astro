@@ -1,40 +1,86 @@
 ---
-import HeaderLink from './HeaderLink.astro';
+import HeroSeaside from '../assets/hero-seaside.png';
+import { COLUMNS } from '../lib/columns';
 ---
 
-<header>
-	<nav class="top-links" aria-label="主导航">
-		<HeaderLink href="/yuanwei">原味薯条</HeaderLink>
-		<HeaderLink href="/fanqiejiang">蕃茄酱</HeaderLink>
-		<HeaderLink href="/haiou-kanguo">海鸥看过</HeaderLink>
+<header class="site-hero">
+	<a class="hero-link" href="/" style={`--hero-bg: url(${HeroSeaside.src})`} aria-label="返回首页">
+		<div class="hero-copy">
+			<h1>整点儿薯条吧</h1>
+			<p>薯条菌的观察、思考与推荐，分成三种味道慢慢更新。</p>
+		</div>
+	</a>
+	<nav class="hero-nav" aria-label="栏目导航">
+		{COLUMNS.map((column) => (
+			<a href={`/${column.slug}`}>{column.name}</a>
+		))}
 	</nav>
 </header>
 
 <style>
-	header {
-		border-bottom: 1px solid #eceff2;
-		background: #ffffff;
-	}
-	.top-links {
+	.site-hero {
 		width: min(var(--site-width), calc(100% - 2rem));
-		margin: 0 auto;
-		padding: 0.55rem 0;
-		display: flex;
-		justify-content: center;
-		gap: 1.2rem;
-		flex-wrap: wrap;
+		margin: 0.6rem auto 0;
 	}
-	.top-links a {
-		padding: 0.3rem 0;
-		font-size: 0.9rem;
+	.hero-link {
+		display: block;
 		text-decoration: none;
-		letter-spacing: 0.03em;
-		color: #5a6672;
-		border-bottom: 1px solid transparent;
+		padding: 2.4rem 1rem 1.15rem;
+		background: var(--hero-bg);
+		background-size: cover;
+		background-position: center;
 	}
-	.top-links a:hover,
-	.top-links a.active {
-		color: #1f2a35;
-		border-bottom-color: #9ea8b1;
+	.hero-copy h1 {
+		margin: 0;
+		font-size: clamp(1.95rem, 4vw, 2.65rem);
+		font-family: var(--font-display);
+		font-weight: 400;
+		letter-spacing: 0.04em;
+		color: #f7fbff;
+	}
+	.hero-copy p {
+		margin: 0.45rem 0 0;
+		font-size: 0.92rem;
+		line-height: 1.7;
+		color: #edf6fb;
+	}
+	.hero-nav {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		gap: 0.45rem;
+		margin-top: 0.55rem;
+	}
+	.hero-nav a {
+		display: inline-flex;
+		align-items: center;
+		font-size: 0.78rem;
+		line-height: 1.35;
+		letter-spacing: 0.02em;
+		padding: 0.16rem 0.52rem;
+		text-decoration: none;
+		color: #1f252a;
+		background: rgba(24, 29, 34, 0.18);
+	}
+	.hero-nav a:hover,
+	.hero-nav a.active {
+		background: #a4abb2;
+		color: #101317;
+	}
+	@media (max-width: 720px) {
+		.site-hero {
+			width: calc(100% - 1.2rem);
+			margin-top: 0.45rem;
+		}
+		.hero-link {
+			padding: 1.85rem 0.8rem 0.95rem;
+			background-position: left center;
+		}
+		.hero-copy h1 {
+			font-size: clamp(1.75rem, 9vw, 2.2rem);
+		}
+		.hero-copy p {
+			font-size: 0.84rem;
+		}
 	}
 </style>

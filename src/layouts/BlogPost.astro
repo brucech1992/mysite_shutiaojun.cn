@@ -5,9 +5,10 @@ import BaseHead from '../components/BaseHead.astro';
 import EngagementPanel from '../components/EngagementPanel.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
 import PostStats from '../components/PostStats.astro';
 import SiteSidebar from '../components/SiteSidebar.astro';
-import { COLUMNS, getColumnMeta } from '../lib/columns';
+import { getColumnMeta } from '../lib/columns';
 
 interface TagItem {
 	name: string;
@@ -78,17 +79,8 @@ const columnMeta = getColumnMeta(column);
 				padding-bottom: 0.95rem;
 				border-bottom: 1px solid #e5eaee;
 			}
-			.title-nav {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 0.45rem;
-				margin-bottom: 0.8rem;
-			}
-			.title-nav .outline-link {
-				font-size: 0.81rem;
-			}
 			.title h1 {
-				margin: 0.2rem 0 0.75rem;
+				margin: 0.1rem 0 0.75rem;
 				font-size: clamp(1.95rem, 4vw, 2.45rem);
 				line-height: 1.35;
 				font-weight: 600;
@@ -206,6 +198,7 @@ const columnMeta = getColumnMeta(column);
 	</head>
 
 	<body>
+		<Header />
 		<main>
 			<section class="article-layout">
 				<article class="article-shell">
@@ -214,12 +207,6 @@ const columnMeta = getColumnMeta(column);
 					</div>
 					<div class="prose">
 						<div class="title">
-							<div class="title-nav">
-								<a class="outline-link" href="/">← 返回首页</a>
-								{COLUMNS.map((item) => (
-									<a class="outline-link" href={`/${item.slug}`}>{item.name}</a>
-								))}
-							</div>
 							<h1>{title}</h1>
 							<div class="date">
 								发表于 <FormattedDate date={pubDate} /> · {columnMeta.name}
