@@ -5,7 +5,6 @@ import BaseHead from '../components/BaseHead.astro';
 import EngagementPanel from '../components/EngagementPanel.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
 import PostStats from '../components/PostStats.astro';
 import { getColumnMeta } from '../lib/columns';
 
@@ -23,88 +22,111 @@ const columnMeta = getColumnMeta(column);
 				width: min(980px, calc(100% - 2rem));
 				max-width: none;
 				margin: 0 auto;
-				padding: 1.8rem 0 3rem;
+				padding: 1.3rem 0 2.8rem;
 			}
 			.article-shell {
-				--accent: var(--column-accent);
-				--soft: var(--column-soft);
-				border: 1px solid #d9e6ee;
 				background: #ffffff;
-				border-radius: 14px;
-				overflow: hidden;
-			}
-			.hero-image {
-				background: var(--soft);
-				padding: 1rem;
+				border: 1px solid #e4e8ec;
+				padding: 0.9rem;
 			}
 			.hero-image img {
 				display: block;
 				width: 100%;
-				border-radius: 10px;
-				box-shadow: var(--box-shadow);
+				height: auto;
+				border-radius: 0;
 			}
 			.prose {
 				width: min(760px, calc(100% - 2rem));
 				margin: 0 auto;
-				padding: 1.3rem 0 2rem;
-				color: rgb(var(--gray-dark));
+				padding: 1.2rem 0 1rem;
+				font-size: 18px;
+				line-height: 1.92;
+				letter-spacing: 0.01em;
+				color: #2e3a45;
 			}
 			.title {
-				margin-bottom: 1em;
-				padding-bottom: 0.8rem;
-				border-bottom: 1px solid #e3ecf2;
+				margin-bottom: 1.1rem;
+				padding-bottom: 0.95rem;
+				border-bottom: 1px solid #e5eaee;
 			}
 			.pill {
 				display: inline-flex;
 				align-items: center;
-				font-size: 0.8rem;
-				padding: 0.2rem 0.6rem;
-				border: 1px solid var(--accent);
-				border-radius: 999px;
-				color: var(--accent);
+				font-size: 0.82rem;
+				padding: 0.22rem 0.6rem;
+				border: 1px solid #d7dfe5;
+				color: #4b5c68;
 				text-decoration: none;
-				margin-bottom: 0.7rem;
+				margin-bottom: 0.72rem;
 			}
 			.title h1 {
-				margin: 0.25rem 0 0.6rem;
-				line-height: 1.2;
+				margin: 0.2rem 0 0.75rem;
+				font-size: clamp(1.95rem, 4vw, 2.45rem);
+				line-height: 1.35;
+				font-weight: 600;
+				color: #2f3b45;
 			}
 			.date {
-				margin-bottom: 0.4rem;
-				color: rgb(var(--gray));
-				font-size: 0.92rem;
+				margin-bottom: 0.2rem;
+				font-size: 0.85rem;
+				letter-spacing: 0.03em;
+				color: #75818b;
 			}
 			.last-updated-on {
-				font-size: 0.88rem;
-				font-style: italic;
+				font-size: 0.83rem;
+			}
+			.prose :global(p) {
+				margin: 0 0 1.45rem;
+				line-height: 1.92;
+			}
+			.prose :global(h2) {
+				margin: 2.2rem 0 0.95rem;
+				font-size: 1.42rem;
+				line-height: 1.5;
+				font-family: var(--font-heading);
+			}
+			.prose :global(h3) {
+				margin: 1.7rem 0 0.75rem;
+				font-size: 1.16rem;
+				line-height: 1.55;
+			}
+			.prose :global(ul),
+			.prose :global(ol) {
+				margin: 0.6rem 0 1.4rem 1.25rem;
 			}
 			.resources {
 				margin-top: 2rem;
 				padding: 1rem;
-				border: 1px solid #d8e6ef;
-				border-radius: 12px;
-				background: var(--soft);
+				border: 1px solid #e4e9ee;
+				background: #fbfcfd;
 			}
 			.resources h3 {
-				margin: 0 0 0.6rem;
-				font-size: 1.12rem;
+				margin: 0 0 0.55rem;
+				font-size: 1.02rem;
 			}
 			.resources ul {
 				margin: 0;
-				padding-left: 1.1rem;
+				padding-left: 1.05rem;
 				display: grid;
-				gap: 0.5rem;
+				gap: 0.45rem;
 			}
 			.resources a {
-				color: var(--accent);
+				color: #3d5263;
+			}
+			@media (max-width: 720px) {
+				main {
+					width: calc(100% - 1.2rem);
+				}
+				.prose {
+					font-size: 17px;
+				}
 			}
 		</style>
 	</head>
 
 	<body>
-		<Header />
 		<main>
-			<article class="article-shell" style={`--column-accent:${columnMeta.accent};--column-soft:${columnMeta.soft};`}>
+			<article class="article-shell">
 				<div class="hero-image">
 					{heroImage && <Image width={1020} height={510} src={heroImage} alt={title} />}
 				</div>

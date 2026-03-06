@@ -4,6 +4,11 @@ description: "长期价值的核心，不是坚持口号，而是设计可持续
 pubDate: 2026-03-05
 heroImage: "../../assets/blog-placeholder-3.jpg"
 column: "fanqiejiang"
+tags:
+  - 长期主义
+  - 反馈回路
+  - 方法论
+  - 深度思考
 ---
 
 很多人把长期主义理解成“再等等”。这是一种误解。

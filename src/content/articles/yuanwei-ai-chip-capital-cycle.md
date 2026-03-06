@@ -4,6 +4,11 @@ description: "当所有人都在谈增长时，回到资本开支、产能释放
 pubDate: 2026-03-04
 heroImage: "../../assets/blog-placeholder-2.jpg"
 column: "yuanwei"
+tags:
+  - AI芯片
+  - 资本周期
+  - 商业财经
+  - 市场观察
 ---
 
 技术叙事很重要，但资本市场最终会回到现金流。AI 芯片产业也是一样。

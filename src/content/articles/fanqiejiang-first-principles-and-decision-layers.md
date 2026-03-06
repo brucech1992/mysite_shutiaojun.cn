@@ -4,6 +4,11 @@ description: "复杂决策不怕难，怕的是把不同层级的问题混在一
 pubDate: 2026-03-03
 heroImage: "../../assets/blog-placeholder-4.jpg"
 column: "fanqiejiang"
+tags:
+  - 第一性原理
+  - 决策模型
+  - 根本逻辑
+  - 深度思考
 ---
 
 多数决策争论，本质上不是观点冲突，而是层级错位。

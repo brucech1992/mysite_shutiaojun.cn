@@ -4,6 +4,11 @@ description: "从港口到工厂，世界贸易链路正在重新分层。这篇
 pubDate: 2026-03-06
 heroImage: "../../assets/blog-placeholder-1.jpg"
 column: "yuanwei"
+tags:
+  - 供应链
+  - 全球贸易
+  - 产业观察
+  - 时事评论
 ---
 
 过去十年，供应链优化的核心是“更低成本”。但最近两三年，企业策略明显转向“成本 + 安全 + 韧性”。

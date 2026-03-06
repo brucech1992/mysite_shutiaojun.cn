@@ -1,84 +1,40 @@
 ---
-import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 ---
 
 <header>
-	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<div class="internal-links">
-			<HeaderLink href="/">首页</HeaderLink>
-			<HeaderLink href="/yuanwei">原味薯条</HeaderLink>
-			<HeaderLink href="/fanqiejiang">蕃茄酱</HeaderLink>
-			<HeaderLink href="/haiou-kanguo">海鸥看过</HeaderLink>
-			<HeaderLink href="/#contact">联系我</HeaderLink>
-		</div>
-		<a class="talk-btn" href="/#contact">一起聊聊</a>
+	<nav class="top-links" aria-label="主导航">
+		<HeaderLink href="/yuanwei">原味薯条</HeaderLink>
+		<HeaderLink href="/fanqiejiang">蕃茄酱</HeaderLink>
+		<HeaderLink href="/haiou-kanguo">海鸥看过</HeaderLink>
 	</nav>
 </header>
+
 <style>
 	header {
-		margin: 0;
-		padding: 0 1em;
+		border-bottom: 1px solid #eceff2;
 		background: #ffffff;
-		border-bottom: 1px solid #d9e6ee;
-		box-shadow: 0 2px 10px rgba(17, 17, 17, 0.05);
 	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
-	}
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
-		font-family: var(--font-heading);
-		letter-spacing: 0.03em;
-	}
-	nav {
+	.top-links {
+		width: min(1120px, calc(100% - 2rem));
+		margin: 0 auto;
+		padding: 0.55rem 0;
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		min-height: 72px;
-	}
-	.internal-links {
-		display: flex;
+		justify-content: center;
+		gap: 1.2rem;
 		flex-wrap: wrap;
 	}
-	nav a {
-		padding: 1em 0.5em;
-		color: #4b6070;
-		border-bottom: 2px solid transparent;
+	.top-links a {
+		padding: 0.3rem 0;
+		font-size: 0.9rem;
 		text-decoration: none;
+		letter-spacing: 0.03em;
+		color: #5a6672;
+		border-bottom: 1px solid transparent;
 	}
-	nav a:hover,
-	nav a.active {
-		color: #1f3647;
-		border-bottom-color: #94b7cc;
-	}
-	.talk-btn {
-		padding: 0.52em 0.92em;
-		border-radius: 999px;
-		border: 1px solid #8bb4c8;
-		color: #1f3647;
-		background: #edf4f8;
-		font-weight: 600;
-		line-height: 1.1;
-		transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-	}
-	.talk-btn:hover {
-		text-decoration: none;
-		background: #e4f0f6;
-		border-color: #5e90ab;
-		transform: translateY(-1px);
-	}
-	@media (max-width: 900px) {
-		nav {
-			flex-wrap: wrap;
-			padding: 0.5rem 0;
-		}
-		.talk-btn {
-			margin-left: auto;
-		}
+	.top-links a:hover,
+	.top-links a.active {
+		color: #1f2a35;
+		border-bottom-color: #9ea8b1;
 	}
 </style>

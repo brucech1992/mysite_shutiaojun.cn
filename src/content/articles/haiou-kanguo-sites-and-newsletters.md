@@ -4,6 +4,11 @@ description: "把高质量输入源整理成清单，减少信息焦虑，也提
 pubDate: 2026-03-01
 heroImage: "../../assets/blog-placeholder-about.jpg"
 column: "haiou-kanguo"
+tags:
+  - 网站推荐
+  - 信息输入
+  - 自媒体
+  - 海鸥看过
 resources:
   - title: "Our World in Data"
     url: "https://ourworldindata.org/"

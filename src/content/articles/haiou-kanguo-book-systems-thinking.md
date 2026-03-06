@@ -4,6 +4,11 @@ description: "这本书帮我从“事件视角”转到“结构视角”，也
 pubDate: 2026-03-02
 heroImage: "../../assets/blog-placeholder-5.jpg"
 column: "haiou-kanguo"
+tags:
+  - 系统思维
+  - 读书笔记
+  - 推荐书单
+  - 海鸥看过
 resources:
   - title: "Thinking in Systems"
     url: "https://www.chelseagreen.com/product/thinking-in-systems/"

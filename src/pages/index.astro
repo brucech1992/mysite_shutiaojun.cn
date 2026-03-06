@@ -3,74 +3,73 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import AboutImage from '../assets/blog-placeholder-about.jpg';
+import SiteSidebar from '../components/SiteSidebar.astro';
 import HeroSeaside from '../assets/hero-seaside.png';
 import { SITE_DESCRIPTION } from '../consts';
-import { COLUMNS } from '../lib/columns';
+import { COLUMNS, getColumnMeta } from '../lib/columns';
+import { buildPostRouteMap, buildTagItems, sortPostsByViews } from '../lib/content-helpers';
 
 const HOME_TITLE = '朋友你好，来根薯条～';
 
-const allPosts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
-
-const columnSections = COLUMNS.map((column) => ({
-	...column,
-	posts: allPosts.filter((post) => post.data.column === column.slug).slice(0, 2),
-}));
+const posts = await getCollection('blog');
+const sortedPosts = await sortPostsByViews(posts);
+const featuredPost = sortedPosts[0];
+const compactPosts = sortedPosts.slice(1, 6);
+const routeMap = buildPostRouteMap(posts);
+const tags = buildTagItems(posts);
 ---
 
 <!doctype html>
 <html lang="zh-CN">
 	<head><BaseHead title={HOME_TITLE} description={SITE_DESCRIPTION} /></head>
 	<body>
-		<Header />
 		<main class="home-shell">
 			<header class="page-branding" style={`--hero-bg: url(${HeroSeaside.src})`}>
-				<p class="brand-kicker">Shutiaojun Studio</p>
 				<h1>整点儿薯条吧</h1>
 				<p class="brand-desc">薯条菌的观察、思考与推荐，分成三种味道慢慢更新。</p>
+				<nav class="topic-nav" aria-label="栏目导航">
+					{COLUMNS.map((column) => (
+						<a href={`/${column.slug}`}>{column.name}</a>
+					))}
+				</nav>
 			</header>
 
-			<section class="column-grid">
-				{columnSections.map((section) => (
-					<article class="column-block" style={`--accent:${section.accent};--soft:${section.soft};`}>
-						<div class="column-head">
-							<h2>{section.name}</h2>
-							<p>{section.summary}</p>
-							<p class="column-desc">{section.description}</p>
-						</div>
-						<div class="column-posts">
-							{section.posts.map((post) => (
-								<a class="post-card" href={`/${section.slug}/${post.id}/`}>
+			<section class="content-layout">
+				<div class="main-feed">
+					<h2>热门文章（按浏览量）</h2>
+					{featuredPost && (
+						<article class="featured-post">
+							<a href={`/${featuredPost.data.column}/${featuredPost.id}/`}>
+								{featuredPost.data.heroImage && (
+									<Image src={featuredPost.data.heroImage} width={920} height={480} alt={featuredPost.data.title} />
+								)}
+								<p class="meta">{getColumnMeta(featuredPost.data.column).name} · {featuredPost.data.pubDate.toISOString().slice(0, 10)}</p>
+								<h3>{featuredPost.data.title}</h3>
+								<p>{featuredPost.data.description}</p>
+							</a>
+						</article>
+					)}
+
+					<div class="compact-list">
+						{compactPosts.map((post) => (
+							<article class="compact-item">
+								<a href={`/${post.data.column}/${post.id}/`}>
 									{post.data.heroImage && (
-										<Image src={post.data.heroImage} width={320} height={180} alt={post.data.title} />
+										<Image src={post.data.heroImage} width={160} height={160} alt={post.data.title} />
 									)}
-									<div class="post-copy">
-										<p class="post-date">{post.data.pubDate.toISOString().slice(0, 10)}</p>
+									<div class="copy">
+										<p class="meta">{getColumnMeta(post.data.column).name} · {post.data.pubDate.toISOString().slice(0, 10)}</p>
 										<h3>{post.data.title}</h3>
 										<p>{post.data.description}</p>
 									</div>
 								</a>
-							))}
-						</div>
-						<a class="more-link" href={`/${section.slug}/`}>查看更多</a>
-					</article>
-				))}
-			</section>
-
-			<aside class="home-contact" id="contact">
-				<section class="profile-widget">
-					<Image src={AboutImage} width={220} height={220} alt="薯条菌头像" />
-					<div>
-						<h3>关于薯条菌</h3>
-						<p>我在这个站点持续写三类内容：时事观察、深度思考、输入推荐。</p>
-						<p>欢迎你留言交流，也可以直接发邮件。</p>
-						<a href="mailto:hello@shutiaojun.cn">hello@shutiaojun.cn</a>
+							</article>
+						))}
 					</div>
-				</section>
-			</aside>
+				</div>
+
+				<SiteSidebar tags={tags} routeMap={routeMap} />
+			</section>
 		</main>
 		<Footer />
 	</body>
@@ -78,166 +77,144 @@ const columnSections = COLUMNS.map((column) => ({
 
 <style>
 	:global(body) {
-		background: #f5f9fc;
-		color: #4b6070;
-		font-size: 17px;
+		background: #f8f9fb;
+		color: #3f4a54;
+		font-size: 16px;
 		line-height: 1.8;
-		font-family: var(--font-body);
 	}
 	:global(main) {
-		width: auto;
 		max-width: none;
+		width: auto;
 		padding: 0;
 	}
 	.home-shell {
 		width: min(1120px, calc(100% - 2rem));
 		margin: 0 auto;
-		padding: 0 0 3rem;
+		padding-bottom: 3rem;
 	}
 	.page-branding {
-		padding: 2.8rem 1rem 2.2rem;
-		text-align: center;
-		border: 1px solid #8bb4c8;
-		border-top: 0;
-		border-radius: 0 0 14px 14px;
+		padding: 3rem 1.1rem 1.2rem;
 		background: var(--hero-bg);
-		background-position: center;
-		background-repeat: no-repeat;
 		background-size: cover;
-	}
-	.brand-kicker {
-		margin: 0;
-		color: #f5f9fc;
-		text-transform: uppercase;
-		letter-spacing: 0.16em;
-		font-size: 0.72rem;
-		font-weight: 500;
-		text-shadow: 0 1px 2px rgba(76, 95, 108, 0.5);
+		background-position: center;
+		border: 1px solid #d8dee4;
+		border-top: 0;
 	}
 	h1 {
-		margin: 0.38rem 0 0.32rem;
-		font-size: clamp(2.45rem, 6vw, 3.35rem);
+		margin: 0;
+		font-size: clamp(2.25rem, 4.4vw, 3.1rem);
 		font-family: var(--font-display);
 		font-weight: 400;
+		color: #f7fbff;
 		letter-spacing: 0.04em;
-		line-height: 1.15;
-		color: #f5f9fc;
-		text-shadow: 0 2px 5px rgba(76, 95, 108, 0.5);
 	}
 	.brand-desc {
-		margin: 0;
-		color: #f5f9fc;
+		margin: 0.5rem 0 0;
 		font-size: 0.95rem;
-		text-shadow: 0 1px 3px rgba(76, 95, 108, 0.45);
+		color: #f2f8fc;
 	}
-	.column-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+	.topic-nav {
+		margin-top: 1.1rem;
+		display: flex;
+		flex-wrap: wrap;
 		gap: 1rem;
-		padding-top: 1.6rem;
+		padding-top: 0.8rem;
+		border-top: 1px solid rgba(243, 249, 253, 0.7);
 	}
-	.column-block {
-		border: 1px solid #d9e6ee;
-		border-radius: 12px;
-		background: #ffffff;
-		overflow: hidden;
+	.topic-nav a {
+		font-size: 0.88rem;
+		letter-spacing: 0.03em;
+		text-decoration: none;
+		color: #eff7fc;
+	}
+	.topic-nav a:hover {
+		color: #ffffff;
+	}
+	.content-layout {
 		display: grid;
-		grid-template-rows: auto 1fr auto;
+		grid-template-columns: minmax(0, 1fr) 300px;
+		gap: 1.4rem;
+		margin-top: 1.2rem;
 	}
-	.column-head {
-		padding: 1rem;
-		background: var(--soft);
-		border-bottom: 1px solid #d9e6ee;
+	.main-feed h2 {
+		margin: 0 0 0.8rem;
+		font-size: 1.05rem;
+		letter-spacing: 0.03em;
+		font-family: var(--font-heading);
+		font-weight: 600;
+		color: #36414b;
 	}
-	h2 {
-		margin: 0 0 0.5rem;
-		font-size: 1.4rem;
-		color: var(--accent);
+	.featured-post {
+		background: #ffffff;
+		border: 1px solid #e3e7eb;
+		padding: 0.7rem;
 	}
-	.column-head p {
+	.featured-post a {
+		text-decoration: none;
+		color: inherit;
+		display: block;
+	}
+	.featured-post img {
+		display: block;
+		width: 100%;
+		height: auto;
+		border-radius: 0;
+	}
+	.featured-post h3 {
+		margin: 0.35rem 0 0.4rem;
+		font-size: clamp(1.25rem, 2.4vw, 1.55rem);
+		line-height: 1.45;
+		font-family: var(--font-heading);
+		color: #2f3941;
+	}
+	.featured-post p {
 		margin: 0;
-		font-size: 0.92rem;
-		color: #4f6472;
+		font-size: 0.93rem;
+		color: #586774;
 	}
-	.column-desc {
+	.meta {
 		margin-top: 0.5rem;
-		font-size: 0.86rem;
-		color: #607885;
+		font-size: 0.76rem;
+		letter-spacing: 0.06em;
+		color: #7b8690;
+		text-transform: capitalize;
 	}
-	.column-posts {
-		padding: 0.8rem;
+	.compact-list {
+		margin-top: 0.95rem;
 		display: grid;
 		gap: 0.7rem;
 	}
-	.post-card {
-		display: grid;
-		grid-template-columns: 92px minmax(0, 1fr);
-		gap: 0.65rem;
-		text-decoration: none;
-		border: 1px solid #deebf3;
-		border-radius: 10px;
-		padding: 0.45rem;
-		background: #fff;
+	.compact-item {
+		border-top: 1px solid #e8ecef;
+		padding-top: 0.7rem;
 	}
-	.post-card img {
-		width: 100%;
-		height: 92px;
+	.compact-item a {
+		display: grid;
+		grid-template-columns: 102px minmax(0, 1fr);
+		gap: 0.8rem;
+		text-decoration: none;
+		color: inherit;
+	}
+	.compact-item img {
+		width: 102px;
+		height: 102px;
 		object-fit: cover;
-		border-radius: 7px;
+		border-radius: 0;
 	}
-	.post-copy h3 {
-		margin: 0.1rem 0 0.3rem;
-		font-size: 0.98rem;
-		line-height: 1.35;
-		color: #2d4353;
-	}
-	.post-copy p {
-		margin: 0;
-		font-size: 0.82rem;
+	.compact-item h3 {
+		margin: 0.05rem 0 0.25rem;
+		font-size: 1rem;
 		line-height: 1.45;
-		color: #5d7381;
+		color: #33414d;
 	}
-	.post-date {
-		letter-spacing: 0.05em;
-		font-size: 0.75rem;
-		color: #698394;
+	.compact-item p {
+		margin: 0;
+		font-size: 0.86rem;
+		line-height: 1.6;
+		color: #61717d;
 	}
-	.more-link {
-		display: inline-block;
-		margin: 0 0.8rem 0.9rem;
-		color: var(--accent);
-		text-decoration: none;
-		border-bottom: 1px solid var(--accent);
-		width: fit-content;
-	}
-	.home-contact {
-		margin-top: 1.2rem;
-	}
-	.profile-widget {
-		display: grid;
-		grid-template-columns: 220px minmax(0, 1fr);
-		gap: 1rem;
-		align-items: center;
-		padding: 1rem;
-		border: 1px solid #d9e6ee;
-		border-radius: 12px;
-		background: #ffffff;
-	}
-	.profile-widget img {
-		border-radius: 10px;
-	}
-	.profile-widget h3 {
-		margin: 0 0 0.5rem;
-		font-size: 1.15rem;
-	}
-	.profile-widget p {
-		margin: 0 0 0.5rem;
-	}
-	.profile-widget a {
-		color: #2d5d79;
-	}
-	@media (max-width: 1000px) {
-		.column-grid {
+	@media (max-width: 980px) {
+		.content-layout {
 			grid-template-columns: 1fr;
 		}
 	}
@@ -248,8 +225,12 @@ const columnSections = COLUMNS.map((column) => ({
 		.page-branding {
 			background-position: left center;
 		}
-		.profile-widget {
-			grid-template-columns: 1fr;
+		.compact-item a {
+			grid-template-columns: 86px minmax(0, 1fr);
+		}
+		.compact-item img {
+			width: 86px;
+			height: 86px;
 		}
 	}
 </style>

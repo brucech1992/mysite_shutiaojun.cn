@@ -1,0 +1,207 @@
+---
+interface TagItem {
+	name: string;
+	count: number;
+	href: string;
+}
+
+interface Props {
+	tags: TagItem[];
+	routeMap: Record<string, string>;
+}
+
+const { tags, routeMap } = Astro.props;
+
+const mediaLinks = [
+	{ label: '公众号：整点儿薯条', href: 'https://mp.weixin.qq.com/' },
+	{ label: '知乎专栏（占位）', href: 'https://www.zhihu.com/' },
+	{ label: 'GitHub（占位）', href: 'https://github.com/' },
+	{ label: '小红书（占位）', href: 'https://www.xiaohongshu.com/' },
+];
+---
+
+<aside class="site-sidebar">
+	<section class="sidebar-widget">
+		<h3>网站简介</h3>
+		<p>你好，我是薯条菌。这个站点聚焦时事观察、深度思考与长期价值内容。</p>
+		<p>目标是把每天的信息输入，沉淀成可复用的认知结构。</p>
+	</section>
+
+	<section class="sidebar-widget">
+		<h3>Tags</h3>
+		<div class="tag-cloud">
+			{tags.map((tag) => (
+				<a href={tag.href}>#{tag.name} ({tag.count})</a>
+			))}
+		</div>
+	</section>
+
+	<section
+		class="sidebar-widget recent-comments"
+		data-supabase-url={import.meta.env.PUBLIC_SUPABASE_URL ?? ''}
+		data-supabase-key={import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? ''}
+		data-route-map={JSON.stringify(routeMap)}
+	>
+		<h3>近期评论</h3>
+		<ul class="comment-feed">
+			<li class="muted">加载中...</li>
+		</ul>
+	</section>
+
+	<section class="sidebar-widget">
+		<h3>媒体链接</h3>
+		<ul class="media-links">
+			{mediaLinks.map((item) => (
+				<li><a href={item.href} target="_blank" rel="noreferrer">{item.label}</a></li>
+			))}
+		</ul>
+	</section>
+</aside>
+
+<style>
+	.site-sidebar {
+		display: grid;
+		gap: 0.95rem;
+		align-content: start;
+	}
+	.sidebar-widget {
+		border: 1px solid #e4e7ea;
+		background: #ffffff;
+		padding: 1rem;
+	}
+	.sidebar-widget h3 {
+		margin: 0 0 0.8rem;
+		font-size: 1rem;
+		letter-spacing: 0.03em;
+		font-family: var(--font-heading);
+		color: #3a4651;
+	}
+	.sidebar-widget p {
+		margin: 0 0 0.7rem;
+		font-size: 0.9rem;
+		line-height: 1.7;
+		color: #596975;
+	}
+	.tag-cloud {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+	}
+	.tag-cloud a {
+		font-size: 0.82rem;
+		text-decoration: none;
+		color: #50616d;
+		border: 1px solid #d7dfe5;
+		padding: 0.2rem 0.45rem;
+		border-radius: 4px;
+	}
+	.tag-cloud a:hover {
+		color: #1d2730;
+		border-color: #aebac5;
+	}
+	.comment-feed,
+	.media-links {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.55rem;
+	}
+	.comment-feed li,
+	.media-links li {
+		font-size: 0.88rem;
+		line-height: 1.6;
+		color: #5a6976;
+	}
+	.comment-feed a,
+	.media-links a {
+		color: #41586a;
+		text-decoration: none;
+	}
+	.comment-feed a:hover,
+	.media-links a:hover {
+		color: #1e2c38;
+	}
+	.comment-time {
+		display: block;
+		font-size: 0.78rem;
+		color: #7a8691;
+	}
+	.muted {
+		color: #7a8894;
+	}
+</style>
+
+<script is:inline>
+(() => {
+	const parseJson = (value) => {
+		if (!value) return {};
+		try {
+			return JSON.parse(value);
+		} catch {
+			return {};
+		}
+	};
+
+	const trimComment = (value) => {
+		if (!value) return '';
+		return value.length > 34 ? `${value.slice(0, 34)}...` : value;
+	};
+
+	document.querySelectorAll('.recent-comments').forEach((root) => {
+		const list = root.querySelector('.comment-feed');
+		const supabaseUrl = (root.getAttribute('data-supabase-url') || '').replace(/\/$/, '');
+		const supabaseKey = root.getAttribute('data-supabase-key') || '';
+		const routeMap = parseJson(root.getAttribute('data-route-map'));
+
+		const setEmpty = (text) => {
+			list.innerHTML = '';
+			const item = document.createElement('li');
+			item.className = 'muted';
+			item.textContent = text;
+			list.appendChild(item);
+		};
+
+		if (!supabaseUrl || !supabaseKey) {
+			setEmpty('未配置评论数据源');
+			return;
+		}
+
+		fetch(
+			`${supabaseUrl}/rest/v1/post_comments?select=post_id,username,content,created_at&order=created_at.desc&limit=5`,
+			{
+				headers: {
+					apikey: supabaseKey,
+					Authorization: `Bearer ${supabaseKey}`,
+				},
+			},
+		)
+			.then((res) => {
+				if (!res.ok) throw new Error('failed');
+				return res.json();
+			})
+			.then((comments) => {
+				list.innerHTML = '';
+				if (!comments.length) {
+					setEmpty('还没有评论');
+					return;
+				}
+
+				comments.forEach((comment) => {
+					const item = document.createElement('li');
+					const link = document.createElement('a');
+					link.href = routeMap[comment.post_id] || '/';
+					link.textContent = `${comment.username}：${trimComment(comment.content)}`;
+					const time = document.createElement('span');
+					time.className = 'comment-time';
+					time.textContent = new Date(comment.created_at).toLocaleString();
+					item.append(link, time);
+					list.appendChild(item);
+				});
+			})
+			.catch(() => {
+				setEmpty('评论读取失败');
+			});
+	});
+})();
+</script>
