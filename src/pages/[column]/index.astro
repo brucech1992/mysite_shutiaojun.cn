@@ -33,7 +33,7 @@ const pageTitle = `${column.name} - 薯条菌`;
 const featuredPost = posts[0];
 const compactPosts = posts.slice(1, 6);
 const routeMap = buildPostRouteMap(allPosts);
-const tags = buildTagItems(allPosts);
+const tags = buildTagItems(allPosts, { limit: 16 });
 ---
 
 <!doctype html>
@@ -42,7 +42,7 @@ const tags = buildTagItems(allPosts);
 		<BaseHead title={pageTitle} description={column.summary} />
 		<style>
 			main {
-				width: min(1120px, calc(100% - 2rem));
+				width: min(var(--site-width), calc(100% - 2rem));
 				max-width: none;
 				padding: 1.4rem 0 2.8rem;
 			}
@@ -52,21 +52,16 @@ const tags = buildTagItems(allPosts);
 				gap: 1.4rem;
 			}
 			.return-link {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.45rem;
-				font-size: 0.88rem;
-				letter-spacing: 0.03em;
-				text-decoration: none;
-				color: #425564;
-				border: 1px solid #d8e0e6;
-				padding: 0.35rem 0.65rem;
-				background: #ffffff;
 				margin-bottom: 0.85rem;
 			}
-			.return-link:hover {
-				border-color: #a8b4be;
-				color: #1f2a33;
+			.column-switch {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.45rem;
+				margin: 0 0 0.85rem;
+			}
+			.column-switch .outline-link {
+				font-size: 0.81rem;
 			}
 			.column-hero {
 				padding: 0.95rem 1rem;
@@ -176,7 +171,12 @@ const tags = buildTagItems(allPosts);
 		<main>
 			<section class="content-layout">
 				<div>
-					<a class="return-link" href="/">← 返回首页</a>
+					<a class="outline-link return-link" href="/">← 返回首页</a>
+					<nav class="column-switch" aria-label="栏目切换">
+						{COLUMNS.map((item) => (
+							<a class="outline-link" href={`/${item.slug}`}>{item.name}</a>
+						))}
+					</nav>
 					<section class="column-hero">
 						<h1>{column.name}</h1>
 						<p>{column.summary}</p>

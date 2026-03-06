@@ -16,7 +16,7 @@ const sortedPosts = await sortPostsByViews(posts);
 const featuredPost = sortedPosts[0];
 const compactPosts = sortedPosts.slice(1, 6);
 const routeMap = buildPostRouteMap(posts);
-const tags = buildTagItems(posts);
+const tags = buildTagItems(posts, { limit: 16 });
 ---
 
 <!doctype html>
@@ -29,14 +29,14 @@ const tags = buildTagItems(posts);
 				<p class="brand-desc">薯条菌的观察、思考与推荐，分成三种味道慢慢更新。</p>
 				<nav class="topic-nav" aria-label="栏目导航">
 					{COLUMNS.map((column) => (
-						<a href={`/${column.slug}`}>{column.name}</a>
+						<a href={`/${column.slug}`} class="outline-link">{column.name}</a>
 					))}
 				</nav>
 			</header>
+			<h2 class="feed-title">热门文章</h2>
 
 			<section class="content-layout">
 				<div class="main-feed">
-					<h2>热门文章（按浏览量）</h2>
 					{featuredPost && (
 						<article class="featured-post">
 							<a href={`/${featuredPost.data.column}/${featuredPost.id}/`}>
@@ -88,9 +88,17 @@ const tags = buildTagItems(posts);
 		padding: 0;
 	}
 	.home-shell {
-		width: min(1120px, calc(100% - 2rem));
+		width: min(var(--site-width), calc(100% - 2rem));
 		margin: 0 auto;
 		padding-bottom: 3rem;
+	}
+	.feed-title {
+		margin: 1.05rem 0 0.75rem;
+		font-size: 1.05rem;
+		letter-spacing: 0.03em;
+		font-family: var(--font-heading);
+		font-weight: 600;
+		color: #36414b;
 	}
 	.page-branding {
 		padding: 3rem 1.1rem 1.2rem;
@@ -99,6 +107,7 @@ const tags = buildTagItems(posts);
 		background-position: center;
 		border: 1px solid #d8dee4;
 		border-top: 0;
+		text-align: center;
 	}
 	h1 {
 		margin: 0;
@@ -117,32 +126,19 @@ const tags = buildTagItems(posts);
 		margin-top: 1.1rem;
 		display: flex;
 		flex-wrap: wrap;
+		justify-content: center;
 		gap: 1rem;
 		padding-top: 0.8rem;
 		border-top: 1px solid rgba(243, 249, 253, 0.7);
 	}
 	.topic-nav a {
-		font-size: 0.88rem;
-		letter-spacing: 0.03em;
-		text-decoration: none;
-		color: #eff7fc;
-	}
-	.topic-nav a:hover {
-		color: #ffffff;
+		font-size: 0.86rem;
 	}
 	.content-layout {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) 300px;
 		gap: 1.4rem;
-		margin-top: 1.2rem;
-	}
-	.main-feed h2 {
-		margin: 0 0 0.8rem;
-		font-size: 1.05rem;
-		letter-spacing: 0.03em;
-		font-family: var(--font-heading);
-		font-weight: 600;
-		color: #36414b;
+		margin-top: 0;
 	}
 	.featured-post {
 		background: #ffffff;

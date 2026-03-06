@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, getCollection, render } from 'astro:content';
 import { COLUMN_KEYS } from '../../lib/columns';
+import { buildPostRouteMap, buildTagItems, sortPostsByViews } from '../../lib/content-helpers';
 import BlogPost from '../../layouts/BlogPost.astro';
 
 export async function getStaticPaths() {
@@ -20,8 +21,20 @@ if (!COLUMN_KEYS.includes(post.data.column)) {
 }
 
 const { Content } = await render(post);
+const allPosts = await getCollection('blog');
+const sortedPosts = await sortPostsByViews(allPosts);
+const routeMap = buildPostRouteMap(allPosts);
+const tags = buildTagItems(allPosts, { limit: 16 });
+const popularPosts = sortedPosts
+	.filter((item) => item.id !== post.id)
+	.slice(0, 6)
+	.map((item) => ({
+		id: item.id,
+		title: item.data.title,
+		column: item.data.column,
+	}));
 ---
 
-<BlogPost postId={post.id} {...post.data}>
+<BlogPost postId={post.id} tags={tags} routeMap={routeMap} popularPosts={popularPosts} {...post.data}>
 	<Content />
 </BlogPost>

@@ -68,9 +68,23 @@ export interface TagItem {
 	name: string;
 	count: number;
 	href: string;
+	sizeLevel: 1 | 2 | 3;
 }
 
-export const buildTagItems = (posts: ArticleEntry[]): TagItem[] => {
+interface BuildTagOptions {
+	limit?: number;
+}
+
+const resolveSizeLevel = (count: number, min: number, max: number): 1 | 2 | 3 => {
+	if (max <= min) return 2;
+	const ratio = (count - min) / (max - min);
+	if (ratio >= 0.66) return 3;
+	if (ratio >= 0.33) return 2;
+	return 1;
+};
+
+export const buildTagItems = (posts: ArticleEntry[], options: BuildTagOptions = {}): TagItem[] => {
+	const limit = options.limit ?? Number.POSITIVE_INFINITY;
 	const tagCounter = new Map<string, number>();
 	const tagColumnCounter = new Map<string, Map<string, number>>();
 
@@ -88,11 +102,18 @@ export const buildTagItems = (posts: ArticleEntry[]): TagItem[] => {
 		}
 	}
 
-	return [...tagCounter.entries()]
+	const sorted = [...tagCounter.entries()]
 		.sort((a, b) => {
 			if (b[1] !== a[1]) return b[1] - a[1];
 			return a[0].localeCompare(b[0], 'zh-CN');
 		})
+		.slice(0, limit);
+
+	const counts = sorted.map(([, count]) => count);
+	const maxCount = counts.length ? Math.max(...counts) : 0;
+	const minCount = counts.length ? Math.min(...counts) : 0;
+
+	return sorted
 		.map(([name, count]) => {
 			const columnCounter = tagColumnCounter.get(name) ?? new Map<string, number>();
 			const primaryColumn = [...columnCounter.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'yuanwei';
@@ -100,6 +121,7 @@ export const buildTagItems = (posts: ArticleEntry[]): TagItem[] => {
 				name,
 				count,
 				href: `/${primaryColumn}/`,
+				sizeLevel: resolveSizeLevel(count, minCount, maxCount),
 			};
 		});
 };

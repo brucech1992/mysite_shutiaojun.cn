@@ -25,31 +25,30 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
 
 <style>
 	.post-stats {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.6rem;
-		margin: 0.3rem 0 1.2rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.9rem 1.1rem;
+		margin: 0.25rem 0 1.3rem;
+		font-family: var(--font-body);
 	}
 	.stat-item {
-		padding: 0.55rem 0.65rem;
-		border: 1px solid #d9e6ee;
-		border-radius: 10px;
-		background: #f6fbff;
-		display: grid;
-		gap: 0.15rem;
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.32rem;
 	}
 	.stat-label {
-		font-size: 0.78rem;
-		color: #5f7381;
+		font-size: 0.9rem;
+		color: #5f6f7b;
 	}
 	.stat-value {
-		font-size: 1rem;
+		font-size: 0.95rem;
 		line-height: 1.2;
-		color: #2c4454;
+		font-weight: 600;
+		color: #33434f;
 	}
 	@media (max-width: 720px) {
 		.post-stats {
-			grid-template-columns: 1fr;
+			gap: 0.65rem 0.9rem;
 		}
 	}
 </style>
